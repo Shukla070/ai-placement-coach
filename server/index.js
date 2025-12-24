@@ -14,6 +14,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { hybridSearch, getQuestionById } from './services/search.js';
+import evaluateRouter from './routes/evaluate.js';
 
 // ESM workaround for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -21,9 +22,6 @@ const __dirname = path.dirname(__filename);
 
 // Load environment variables (explicitly specify path for ESM)
 dotenv.config({ path: path.join(__dirname, '../.env') });
-
-// DEBUG: Verify API key is loaded
-console.log('🔑 API Key loaded:', process.env.GOOGLE_AI_API_KEY ? '✅ Yes' : '❌ No');
 
 // Configuration
 const PORT = process.env.PORT || 3001;
@@ -61,6 +59,9 @@ async function loadVectorDatabase() {
     // Calculate memory usage
     const memoryMB = (JSON.stringify(VECTOR_DB).length / 1024 / 1024).toFixed(2);
     console.log(`💾 Memory usage: ~${memoryMB} MB`);
+    
+    // Store in app for access by routes
+    app.set('VECTOR_DB', VECTOR_DB);
     
     return true;
   } catch (error) {
@@ -160,6 +161,9 @@ app.get('/api/questions', (req, res) => {
     });
   }
 });
+
+// Mount evaluation router
+app.use('/api', evaluateRouter);
 
 // 404 handler
 app.use((req, res) => {
