@@ -1,9 +1,9 @@
 /**
- * Main App - AI Placement Coach Frontend (Redesigned)
+ * Main App - LeetCode Style Coding Platform
  */
 
 import { useState } from 'react';
-import CodeEditor from './components/SimpleCodeEditor';
+import CodeEditor from './components/CodeEditor';
 import QuestionDisplay from './components/QuestionDisplay';
 import AudioRecorder from './components/AudioRecorder';
 import SearchBar from './components/SearchBar';
@@ -15,7 +15,6 @@ function solve() {
 }`;
 
 export default function App() {
-  // State
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [code, setCode] = useState(DEFAULT_CODE);
   const [audioBlob, setAudioBlob] = useState(null);
@@ -24,9 +23,6 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  /**
-   * Handle search
-   */
   async function handleSearch(query, filters) {
     setIsSearching(true);
     setFeedback(null);
@@ -51,9 +47,6 @@ export default function App() {
     }
   }
 
-  /**
-   * Select a question from search results
-   */
   function selectQuestion(question) {
     setCurrentQuestion(question);
     setCode(DEFAULT_CODE);
@@ -61,9 +54,6 @@ export default function App() {
     setFeedback(null);
   }
 
-  /**
-   * Handle audio recording complete
-   */
   function handleRecordingComplete(blob) {
     setAudioBlob(blob);
     setFeedback({
@@ -72,9 +62,6 @@ export default function App() {
     });
   }
 
-  /**
-   * Submit solution for evaluation
-   */
   async function handleSubmit() {
     if (!currentQuestion) {
       setFeedback({
@@ -124,178 +111,167 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-darker text-gray-100">
-      {/* Header */}
-      <header className="bg-dark border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="text-3xl">🤖</div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">AI Placement Coach</h1>
-            <p className="text-sm text-gray-400">Practice with real interview questions</p>
+    <div className="h-screen flex flex-col bg-[#1a1a1a] text-[#e5e5e5] overflow-hidden">
+      {/* Top Navigation Bar */}
+      <header className="flex-shrink-0 h-14 bg-[#262626] border-b border-[#404040] flex items-center px-6">
+        <div className="flex items-center gap-4 w-full">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center text-lg font-bold">
+              AI
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-white">AI Placement Coach</h1>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-400">
-            {searchResults.length > 0 && `${searchResults.length} questions loaded`}
+          <div className="flex-1"></div>
+          <div className="flex items-center gap-3">
+            {searchResults.length > 0 && (
+              <span className="text-sm text-gray-400">{searchResults.length} questions</span>
+            )}
+            {currentQuestion && (
+              <span className="text-sm text-green-400 font-medium">● Active</span>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Main Split Layout */}
+      {/* Main Split Screen Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Search & Question (Scrollable) */}
-        <div className="w-1/2 border-r border-gray-700 flex flex-col">
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6 space-y-6">
-              {/* Search Section */}
-              <section>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  🔍 Find Questions
-                </h2>
-                <SearchBar onSearch={handleSearch} isLoading={isSearching} />
-              </section>
+        {/* LEFT PANEL - Questions (35% width) */}
+        <div className="w-[35%] flex flex-col border-r border-[#404040] bg-[#1f1f1f]">
+          {/* Search Section - Fixed */}
+          <div className="flex-shrink-0 p-4 border-b border-[#404040] bg-[#262626]">
+            <SearchBar onSearch={handleSearch} isLoading={isSearching} />
+          </div>
 
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 space-y-4">
               {/* Search Results */}
               {searchResults.length > 0 && (
-                <section>
-                  <h2 className="text-lg font-semibold mb-4">
-                    📊 Results ({searchResults.length})
-                  </h2>
-                  <div className="grid gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results</h3>
+                  <div className="space-y-2">
                     {searchResults.map((result) => (
                       <button
                         key={result.id}
                         onClick={() => selectQuestion(result)}
-                        className={`text-left p-4 rounded-lg transition-all ${
+                        className={`w-full text-left p-3 rounded-lg transition-all ${
                           currentQuestion?.id === result.id
-                            ? 'bg-primary text-white shadow-lg scale-105'
-                            : 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                            ? 'bg-[#0ea5e9] text-white shadow-lg'
+                            : 'bg-[#2d2d2d] hover:bg-[#353535] text-gray-200 border border-[#404040]'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <div className="font-semibold">{result.title}</div>
-                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm mb-1.5 truncate">{result.title}</h4>
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <span className={`text-xs px-2 py-0.5 rounded ${
-                                result.metadata.difficulty === 'Easy' ? 'bg-green-900 text-green-200' :
-                                result.metadata.difficulty === 'Medium' ? 'bg-yellow-900 text-yellow-200' :
-                                'bg-red-900 text-red-200'
+                                result.metadata.difficulty === 'Easy' 
+                                  ? 'bg-green-500/20 text-green-400' 
+                                  : result.metadata.difficulty === 'Medium'
+                                  ? 'bg-yellow-500/20 text-yellow-400'
+                                  : 'bg-red-500/20 text-red-400'
                               }`}>
                                 {result.metadata.difficulty}
                               </span>
                               {result.metadata.topics.slice(0, 2).map(topic => (
-                                <span key={topic} className="text-xs px-2 py-0.5 rounded bg-blue-900 text-blue-200">
+                                <span key={topic} className="text-xs px-2 py-0.5 rounded bg-[#0ea5e9]/20 text-[#0ea5e9]">
                                   {topic}
                                 </span>
                               ))}
                             </div>
                           </div>
-                          <div className="text-xs text-gray-400">
-                            {(result._searchScore * 100).toFixed(0)}% match
-                          </div>
+                          <span className="text-xs text-gray-400">
+                            {(result._searchScore * 100).toFixed(0)}%
+                          </span>
                         </div>
                       </button>
                     ))}
                   </div>
-                </section>
+                </div>
               )}
 
               {/* Question Display */}
               {currentQuestion && (
-                <section>
-                  <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    📝 Problem Statement
-                  </h2>
-                  <QuestionDisplay question={currentQuestion} />
-                </section>
+                <div className="mt-4">
+                  <div className="bg-[#2d2d2d] rounded-lg p-4 border border-[#404040]">
+                    <QuestionDisplay question={currentQuestion} />
+                  </div>
+                </div>
               )}
 
               {/* Empty State */}
               {!currentQuestion && searchResults.length === 0 && (
-                <div className="text-center py-12 text-gray-400">
-                  <div className="text-6xl mb-4">🎯</div>
-                  <p className="text-lg">Search for questions to get started</p>
-                  <p className="text-sm mt-2">Try "array problems" or "graph algorithms"</p>
+                <div className="text-center py-16">
+                  <div className="text-5xl mb-4">🎯</div>
+                  <p className="text-sm text-gray-400">Search for questions to get started</p>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Right Panel - Code Editor & Submission (Fixed) */}
-        <div className="w-1/2 flex flex-col">
-          {/* Code Editor (Takes most space) */}
-          <div className="flex-1 flex flex-col min-h-0">
-            <div className="bg-dark border-b border-gray-700 px-4 py-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                💻 Code Editor
-              </h2>
+        {/* RIGHT PANEL - Code Editor (65% width) */}
+        <div className="flex-1 flex flex-col bg-[#1a1a1a]">
+          {/* Code Editor Header */}
+          <div className="flex-shrink-0 h-12 bg-[#262626] border-b border-[#404040] flex items-center justify-between px-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-gray-300">Code Editor</span>
               {currentQuestion && (
-                <div className="text-xs text-gray-400">
-                  Solving: {currentQuestion.title}
-                </div>
+                <span className="text-xs text-gray-500">• {currentQuestion.title}</span>
               )}
-            </div>
-            <div className="flex-1 min-h-0">
-              <CodeEditor
-                value={code}
-                onChange={setCode}
-                disabled={isSubmitting || !currentQuestion}
-              />
             </div>
           </div>
 
-          {/* Audio Recorder & Submit Section (Fixed height) */}
-          <div className="bg-dark border-t border-gray-700 p-6 space-y-4">
+          {/* Code Editor - Takes most space */}
+          <div className="flex-1 min-h-0">
+            <CodeEditor
+              value={code}
+              onChange={setCode}
+              disabled={isSubmitting || !currentQuestion}
+            />
+          </div>
+
+          {/* Bottom Panel - Audio & Submit (Fixed height) */}
+          <div className="flex-shrink-0 bg-[#262626] border-t border-[#404040] p-4 space-y-4">
             <AudioRecorder
               onRecordingComplete={handleRecordingComplete}
               disabled={isSubmitting || !currentQuestion}
             />
 
-            {/* Feedback Display */}
+            {/* Feedback */}
             {feedback && (
-              <div className={`rounded-lg p-4 text-sm ${
-                feedback.type === 'error' ? 'bg-red-900/20 border border-red-500 text-red-200' :
-                feedback.type === 'warning' ? 'bg-yellow-900/20 border border-yellow-500 text-yellow-200' :
-                feedback.type === 'success' ? 'bg-green-900/20 border border-green-500 text-green-200' :
-                'bg-blue-900/20 border border-blue-500 text-blue-200'
+              <div className={`rounded-lg p-3 text-sm border ${
+                feedback.type === 'error' 
+                  ? 'bg-red-500/10 border-red-500/30 text-red-300' 
+                  : feedback.type === 'warning' 
+                  ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-300'
+                  : feedback.type === 'success' 
+                  ? 'bg-green-500/10 border-green-500/30 text-green-300'
+                  : 'bg-[#0ea5e9]/10 border-[#0ea5e9]/30 text-[#0ea5e9]'
               }`}>
-                <p className="font-semibold">{feedback.message}</p>
+                <p className="font-semibold mb-2">{feedback.message}</p>
                 {feedback.details && (
                   <div className="mt-3 space-y-2">
-                    <div className="flex gap-4">
-                      <div className="flex-1 bg-black/20 rounded p-2 text-center">
-                        <div className="text-xs opacity-75">Correctness</div>
-                        <div className="text-lg font-bold">{feedback.details.breakdown.correctness}/40</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
+                        <div className="text-xs text-gray-400 mb-1">Correctness</div>
+                        <div className="text-lg font-bold text-[#0ea5e9]">{feedback.details.breakdown.correctness}/40</div>
                       </div>
-                      <div className="flex-1 bg-black/20 rounded p-2 text-center">
-                        <div className="text-xs opacity-75">Efficiency</div>
-                        <div className="text-lg font-bold">{feedback.details.breakdown.efficiency}/30</div>
+                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
+                        <div className="text-xs text-gray-400 mb-1">Efficiency</div>
+                        <div className="text-lg font-bold text-purple-400">{feedback.details.breakdown.efficiency}/30</div>
                       </div>
-                      <div className="flex-1 bg-black/20 rounded p-2 text-center">
-                        <div className="text-xs opacity-75">Communication</div>
-                        <div className="text-lg font-bold">{feedback.details.breakdown.communication}/30</div>
+                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
+                        <div className="text-xs text-gray-400 mb-1">Communication</div>
+                        <div className="text-lg font-bold text-green-400">{feedback.details.breakdown.communication}/30</div>
                       </div>
                     </div>
                     {feedback.details.feedback && (
-                      <div className="text-xs opacity-90 mt-2 p-3 bg-black/20 rounded">
-                        <strong>Feedback:</strong> {feedback.details.feedback}
-                      </div>
-                    )}
-                    {feedback.details.strengths && feedback.details.strengths.length > 0 && (
-                      <div className="text-xs">
-                        <strong>✅ Strengths:</strong>
-                        <ul className="list-disc list-inside mt-1 opacity-90">
-                          {feedback.details.strengths.map((s, i) => <li key={i}>{s}</li>)}
-                        </ul>
-                      </div>
-                    )}
-                    {feedback.details.improvements && feedback.details.improvements.length > 0 && (
-                      <div className="text-xs">
-                        <strong>💡 Improvements:</strong>
-                        <ul className="list-disc list-inside mt-1 opacity-90">
-                          {feedback.details.improvements.map((imp, i) => <li key={i}>{imp}</li>)}
-                        </ul>
+                      <div className="text-xs mt-2 p-2 bg-[#1a1a1a] rounded border border-[#404040]">
+                        <strong className="text-white">Feedback:</strong>
+                        <p className="mt-1 text-gray-300">{feedback.details.feedback}</p>
                       </div>
                     )}
                   </div>
@@ -307,7 +283,9 @@ export default function App() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || !currentQuestion || !audioBlob}
-              className="w-full btn-primary py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all"
+              className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold py-3 px-4 rounded-lg 
+                         transition-all duration-200 shadow-md hover:shadow-lg
+                         disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -315,12 +293,12 @@ export default function App() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Processing...
+                  <span>Processing...</span>
                 </>
               ) : (
                 <>
-                  <span className="text-2xl">🚀</span>
-                  Submit Solution
+                  <span>🚀</span>
+                  <span>Submit Solution</span>
                 </>
               )}
             </button>

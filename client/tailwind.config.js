@@ -7,13 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3b82f6',
-        secondary: '#8b5cf6',
-        success: '#10b981',
-        danger: '#ef4444',
-        dark: '#1e293b',
-        darker: '#0f172a',
-      }
+        'leetcode-bg': '#1a1a1a',
+        'leetcode-panel': '#262626',
+        'leetcode-border': '#404040',
+        'leetcode-text': '#e5e5e5',
+        'leetcode-accent': '#0ea5e9',
+      },
     },
   },
   plugins: [],

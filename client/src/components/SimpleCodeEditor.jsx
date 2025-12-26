@@ -46,15 +46,18 @@ export default function SimpleCodeEditor({ value, onChange, disabled = false }) 
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-900">
+    <div className="h-full flex flex-col bg-dark-900">
       {/* Language Selector */}
-      <div className="bg-dark border-b border-gray-700 px-4 py-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-300">Code Editor</h3>
+      <div className="bg-dark-700/50 border-b border-dark-700 px-6 py-4 flex items-center justify-between">
+        <h3 className="text-sm font-bold text-gray-200 flex items-center gap-2">
+          <span className="text-lg">💻</span>
+          Code Editor
+        </h3>
         <select
           value={language}
           onChange={handleLanguageChange}
           disabled={disabled}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-1 text-sm text-gray-200 focus:outline-none focus:border-primary disabled:opacity-50"
+          className="input-field py-2 text-sm"
         >
           {LANGUAGE_OPTIONS.map((lang) => (
             <option key={lang.value} value={lang.value}>
@@ -69,11 +72,13 @@ export default function SimpleCodeEditor({ value, onChange, disabled = false }) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="flex-1 w-full p-4 bg-gray-900 text-gray-100 font-mono text-sm resize-none focus:outline-none disabled:opacity-50 border-none"
+        className="flex-1 w-full p-6 bg-dark-900 text-gray-100 font-mono text-sm resize-none 
+                   focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 
+                   border-none transition-all duration-200"
         style={{ 
           tabSize: 2,
           fontFamily: "'Fira Code', 'Courier New', monospace",
-          lineHeight: '1.5',
+          lineHeight: '1.6',
         }}
         placeholder="Write your code here..."
         spellCheck={false}
