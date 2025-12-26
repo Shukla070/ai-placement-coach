@@ -32,3 +32,5 @@ coverage/
 # Production
 dist/
 build/credentials/
+
+credentials/
