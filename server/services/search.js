@@ -1,24 +1,21 @@
 /**
  * Hybrid Search Service - Combines filtering + vector similarity
- * 
- * Strategy:
- * 1. Apply hard filters (metadata) to narrow candidates
- * 2. Generate embedding for query
- * 3. Compute cosine similarity against candidates
- * 4. Return top-k results
+ * Uses Vertex AI for embeddings via REST API
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import fetch from 'node-fetch';
 
-// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-
-function getGenAI() {
-    if (!process.env.GOOGLE_AI_API_KEY) {
-        throw new Error('GOOGLE_AI_API_KEY not loaded at runtime');
-    }
-    return new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+// Get access token for API calls
+async function getAccessToken() {
+  const { GoogleAuth } = await import('google-auth-library');
+  const auth = new GoogleAuth({
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  const client = await auth.getClient();
+  const token = await client.getAccessToken();
+  return token.token;
 }
-
 
 /**
  * Compute cosine similarity between two vectors
@@ -43,40 +40,56 @@ function cosineSimilarity(vecA, vecB) {
 }
 
 /**
- * Generate embedding for search query
+ * Generate embedding for search query using Vertex AI REST API
  */
-// async function generateQueryEmbedding(queryText) {
-//   try {
-//     const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-//     const result = await model.embedContent(queryText);
-//     return result.embedding.values;
-//   } catch (error) {
-//     throw new Error(`Failed to generate query embedding: ${error.message}`);
-//   }
-// }
-
 async function generateQueryEmbedding(queryText) {
     try {
-        const genAI = getGenAI();
-        const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-        const result = await model.embedContent(queryText);
-        return result.embedding.values;
+        const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+        const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+        const accessToken = await getAccessToken();
+        
+        const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/text-embedding-004:predict`;
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            instances: [{ content: queryText }],
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`API error ${response.status}: ${error}`);
+        }
+
+        const result = await response.json();
+        
+        // Extract embedding values
+        if (result.predictions && result.predictions[0]) {
+          const prediction = result.predictions[0];
+          
+          if (prediction.embeddings && prediction.embeddings.values) {
+            return prediction.embeddings.values;
+          }
+          
+          if (prediction.values) {
+            return prediction.values;
+          }
+        }
+        
+        throw new Error('Could not extract embedding values from response');
     } catch (error) {
+        console.error('Embedding error details:', error);
         throw new Error(`Failed to generate query embedding: ${error.message}`);
     }
 }
 
-
 /**
  * Apply metadata filters to narrow down candidates
- * 
- * Filters object structure:
- * {
- *   difficulty: "Easy" | "Medium" | "Hard",
- *   topics: ["Array", "Graph"],  // Match ANY
- *   companies: ["Google"],        // Match ANY
- *   minFrequency: 3               // >= threshold
- * }
  */
 function applyFilters(questions, filters) {
   if (!filters || Object.keys(filters).length === 0) {
@@ -124,12 +137,6 @@ function sanitizeQuestion(question) {
 
 /**
  * Main hybrid search function
- * 
- * @param {Array} vectorDB - Full questions database with embeddings
- * @param {string} queryText - User's search query
- * @param {Object} filters - Optional metadata filters
- * @param {number} topK - Number of results to return (default: 5)
- * @returns {Promise<Array>} - Top matching questions (sanitized)
  */
 export async function hybridSearch(vectorDB, queryText, filters = {}, topK = 5) {
   const startTime = Date.now();
@@ -161,7 +168,7 @@ export async function hybridSearch(vectorDB, queryText, filters = {}, topK = 5) 
 
   // Step 3: Compute cosine similarity for all candidates
   const scoredCandidates = candidates
-    .filter(q => q.embedding && q.embedding.length > 0) // Skip questions with failed embeddings
+    .filter(q => q.embedding && q.embedding.length > 0)
     .map(question => ({
       question,
       similarity: cosineSimilarity(queryEmbedding, question.embedding)
@@ -206,7 +213,6 @@ export function getQuestionById(vectorDB, questionId) {
 
 /**
  * Get judge context for a specific question (server-side only)
- * This should NEVER be exposed via API
  */
 export function getJudgeContext(vectorDB, questionId) {
   const question = vectorDB.find(q => q.id === questionId);

@@ -2,48 +2,88 @@
  * Embedding Pipeline - Generates vector embeddings for all questions
  * 
  * Usage: node scripts/seed.js
- * 
- * Requirements:
- * - GOOGLE_AI_API_KEY must be set in .env
- * - data/questions_master.json must exist
- * 
- * Output: data/questions_with_vectors.json
  */
 
-import fs from 'fs/promises';
+import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import dotenv from 'dotenv';
 
 // ESM workaround for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-dotenv.config();
+// Load environment variables FIRST
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
+// NOW import other modules
+import fs from 'fs/promises';
+import fetch from 'node-fetch';
 
 // Configuration
 const CONFIG = {
   INPUT_PATH: path.join(__dirname, '../data/questions_master.json'),
   OUTPUT_PATH: path.join(__dirname, '../data/questions_with_vectors.json'),
   EMBEDDING_MODEL: 'text-embedding-004',
-  BATCH_SIZE: 10, // Process 10 questions at a time to avoid rate limits
-  RETRY_DELAY: 1000, // 1 second between retries
+  BATCH_SIZE: 10,
+  RETRY_DELAY: 1000,
   MAX_RETRIES: 3
 };
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+// Get access token for API calls
+async function getAccessToken() {
+  const { GoogleAuth } = await import('google-auth-library');
+  const auth = new GoogleAuth({
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  const client = await auth.getClient();
+  const token = await client.getAccessToken();
+  return token.token;
+}
 
 /**
- * Generate embedding for a single text string
+ * Generate embedding for a single text string using Vertex AI REST API
  */
 async function generateEmbedding(text, retries = 0) {
   try {
-    const model = genAI.getGenerativeModel({ model: CONFIG.EMBEDDING_MODEL });
-    const result = await model.embedContent(text);
-    return result.embedding.values;
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+    const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+    const accessToken = await getAccessToken();
+    
+    const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${CONFIG.EMBEDDING_MODEL}:predict`;
+    
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        instances: [{ content: text }],
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`API error ${response.status}: ${error}`);
+    }
+
+    const result = await response.json();
+    
+    // Extract embedding values
+    if (result.predictions && result.predictions[0]) {
+      const prediction = result.predictions[0];
+      
+      if (prediction.embeddings && prediction.embeddings.values) {
+        return prediction.embeddings.values;
+      }
+      
+      if (prediction.values) {
+        return prediction.values;
+      }
+    }
+    
+    throw new Error('Could not extract embedding values from response');
   } catch (error) {
     if (retries < CONFIG.MAX_RETRIES) {
       console.warn(`⚠️  Retry ${retries + 1}/${CONFIG.MAX_RETRIES} for text: "${text.substring(0, 50)}..."`);
@@ -100,10 +140,19 @@ async function processBatch(questions, startIdx) {
 async function main() {
   console.log('🚀 Starting Embedding Pipeline...\n');
 
-  // Validate API key
-  if (!process.env.GOOGLE_AI_API_KEY) {
-    throw new Error('GOOGLE_AI_API_KEY is not set in .env file');
+  // Validate configuration
+  if (!process.env.GOOGLE_CLOUD_PROJECT_ID) {
+    throw new Error('GOOGLE_CLOUD_PROJECT_ID is not set in .env file');
   }
+  
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    throw new Error('GOOGLE_APPLICATION_CREDENTIALS is not set in .env file');
+  }
+  
+  console.log('✅ Vertex AI Configuration:');
+  console.log(`   Project: ${process.env.GOOGLE_CLOUD_PROJECT_ID}`);
+  console.log(`   Location: ${process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'}`);
+  console.log(`   Credentials: ${process.env.GOOGLE_APPLICATION_CREDENTIALS}\n`);
 
   // Read master questions file
   console.log(`📖 Reading: ${CONFIG.INPUT_PATH}`);

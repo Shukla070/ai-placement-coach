@@ -1,16 +1,8 @@
 /**
- * Judge Service - AI-powered code evaluation
- * 
- * Strategy:
- * 1. Load judge context (optimal solution, edge cases)
- * 2. Build structured prompt with XML delimiters
- * 3. Call Gemini Flash with JSON schema
- * 4. Parse and validate response
+ * Judge Service - AI-powered code evaluation using Vertex AI
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+import { VertexAI } from '@google-cloud/vertexai';
 
 /**
  * Build the judge prompt with XML structure
@@ -75,12 +67,7 @@ Respond with ONLY the JSON object, no additional text.`;
 }
 
 /**
- * Evaluate a coding submission
- * 
- * @param {Object} question - Full question object with judge_context
- * @param {string} userCode - User's code submission
- * @param {string} transcript - Transcribed audio explanation
- * @returns {Promise<Object>} - Evaluation result
+ * Evaluate a coding submission using Vertex AI Gemini
  */
 export async function evaluateSubmission(question, userCode, transcript) {
   try {
@@ -92,19 +79,29 @@ export async function evaluateSubmission(question, userCode, transcript) {
     // Build prompt
     const prompt = buildJudgePrompt(question, userCode, transcript);
 
-    // Call Gemini Flash (fast and cheap for evaluation)
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+    // Initialize Vertex AI (create fresh each time to ensure env vars are loaded)
+    const vertexAI = new VertexAI({
+      project: process.env.GOOGLE_CLOUD_PROJECT_ID,
+      location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+    });
+
+    // Get Gemini 2.0 Flash model from Vertex AI
+    const generativeModel = vertexAI.getGenerativeModel({
+      model: 'gemini-2.0-flash-exp',
       generationConfig: {
-        temperature: 0.3, // Lower temperature for more consistent scoring
+        temperature: 0.3,
         topP: 0.8,
         topK: 40,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 8192,
       },
     });
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    console.log('🤖 Calling Vertex AI Gemini...');
+
+    // Generate content
+    const result = await generativeModel.generateContent(prompt);
+    const response = result.response;
+    const responseText = response.candidates[0].content.parts[0].text;
 
     console.log('🤖 AI Response received');
     console.log('   Raw response length:', responseText.length);

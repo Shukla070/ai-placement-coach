@@ -1,27 +1,30 @@
 /**
  * Express Server - AI Placement Coach Backend
- * 
- * Features:
- * - In-memory vector database (loads on startup)
- * - <10ms search latency
- * - Secure API (judge_context never exposed)
  */
 
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { hybridSearch, getQuestionById } from './services/search.js';
-import evaluateRouter from './routes/evaluate.js';
 
 // ESM workaround for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables (explicitly specify path for ESM)
+// Load environment variables FIRST (before any other imports)
 dotenv.config({ path: path.join(__dirname, '../.env') });
+
+// DEBUG: Verify environment variables are loaded
+console.log('🔑 Environment Check:');
+console.log('   GOOGLE_CLOUD_PROJECT_ID:', process.env.GOOGLE_CLOUD_PROJECT_ID ? '✅ Set' : '❌ Missing');
+console.log('   GOOGLE_APPLICATION_CREDENTIALS:', process.env.GOOGLE_APPLICATION_CREDENTIALS ? '✅ Set' : '❌ Missing');
+console.log('');
+
+// NOW import other modules (after .env is loaded)
+import express from 'express';
+import cors from 'cors';
+import fs from 'fs/promises';
+import { hybridSearch, getQuestionById } from './services/search.js';
+import evaluateRouter from './routes/evaluate.js';
 
 // Configuration
 const PORT = process.env.PORT || 3001;
