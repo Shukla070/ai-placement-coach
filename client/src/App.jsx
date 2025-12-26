@@ -116,20 +116,22 @@ export default function App() {
       <header className="flex-shrink-0 h-14 bg-[#262626] border-b border-[#404040] flex items-center px-6">
         <div className="flex items-center gap-4 w-full">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center text-lg font-bold">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-lg">
               AI
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-white">AI Placement Coach</h1>
-            </div>
+            <h1 className="text-lg font-bold text-white">Placement Coach</h1>
           </div>
           <div className="flex-1"></div>
           <div className="flex items-center gap-3">
-            {searchResults.length > 0 && (
-              <span className="text-sm text-gray-400">{searchResults.length} questions</span>
+            {searchResults.length > 0 && !currentQuestion && (
+              <div className="px-3 py-1.5 bg-[#0ea5e9]/20 border border-[#0ea5e9]/40 rounded-lg">
+                <span className="text-sm text-[#0ea5e9] font-semibold">{searchResults.length} found</span>
+              </div>
             )}
             {currentQuestion && (
-              <span className="text-sm text-green-400 font-medium">● Active</span>
+              <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/40 rounded-lg">
+                <span className="text-sm text-green-400 font-semibold">Solving</span>
+              </div>
             )}
           </div>
         </div>
@@ -139,52 +141,56 @@ export default function App() {
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT PANEL - Questions (35% width) */}
         <div className="w-[35%] flex flex-col border-r border-[#404040] bg-[#1f1f1f]">
-          {/* Search Section - Fixed */}
-          <div className="flex-shrink-0 p-4 border-b border-[#404040] bg-[#262626]">
-            <SearchBar onSearch={handleSearch} isLoading={isSearching} />
+          {/* Search Section - Fixed at top */}
+          <div className="flex-shrink-0 p-5 border-b border-[#404040] bg-[#262626]">
+            <SearchBar 
+              onSearch={handleSearch} 
+              isLoading={isSearching}
+              showQuickSearches={!currentQuestion}
+            />
           </div>
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-4">
-              {/* Search Results */}
-              {searchResults.length > 0 && (
+            <div className="p-5">
+              {/* Show Search Results only when no question is selected */}
+              {!currentQuestion && searchResults.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results</h3>
-                  <div className="space-y-2">
+                  <h3 className="text-sm font-bold text-white mb-4">Search Results</h3>
+                  <div className="space-y-3">
                     {searchResults.map((result) => (
                       <button
                         key={result.id}
                         onClick={() => selectQuestion(result)}
-                        className={`w-full text-left p-3 rounded-lg transition-all ${
+                        className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${
                           currentQuestion?.id === result.id
                             ? 'bg-[#0ea5e9] text-white shadow-lg'
-                            : 'bg-[#2d2d2d] hover:bg-[#353535] text-gray-200 border border-[#404040]'
+                            : 'bg-[#2d2d2d] hover:bg-[#353535] text-gray-200 border border-[#404040] hover:border-[#0ea5e9]/50'
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm mb-1.5 truncate">{result.title}</h4>
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className={`text-xs px-2 py-0.5 rounded ${
+                            <h4 className="font-semibold text-sm mb-2 truncate">{result.title}</h4>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className={`text-xs px-2.5 py-1 rounded font-semibold ${
                                 result.metadata.difficulty === 'Easy' 
-                                  ? 'bg-green-500/20 text-green-400' 
+                                  ? 'bg-green-500/25 text-green-300 border border-green-500/40' 
                                   : result.metadata.difficulty === 'Medium'
-                                  ? 'bg-yellow-500/20 text-yellow-400'
-                                  : 'bg-red-500/20 text-red-400'
+                                  ? 'bg-yellow-500/25 text-yellow-300 border border-yellow-500/40'
+                                  : 'bg-red-500/25 text-red-300 border border-red-500/40'
                               }`}>
                                 {result.metadata.difficulty}
                               </span>
                               {result.metadata.topics.slice(0, 2).map(topic => (
-                                <span key={topic} className="text-xs px-2 py-0.5 rounded bg-[#0ea5e9]/20 text-[#0ea5e9]">
+                                <span key={topic} className="text-xs px-2.5 py-1 rounded bg-[#0ea5e9]/25 text-[#0ea5e9] border border-[#0ea5e9]/40 font-medium">
                                   {topic}
                                 </span>
                               ))}
                             </div>
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-400 font-semibold">
                             {(result._searchScore * 100).toFixed(0)}%
-                          </span>
+                          </div>
                         </div>
                       </button>
                     ))}
@@ -192,12 +198,10 @@ export default function App() {
                 </div>
               )}
 
-              {/* Question Display */}
+              {/* Question Display - Show when question is selected */}
               {currentQuestion && (
-                <div className="mt-4">
-                  <div className="bg-[#2d2d2d] rounded-lg p-4 border border-[#404040]">
-                    <QuestionDisplay question={currentQuestion} />
-                  </div>
+                <div className="bg-[#2d2d2d] rounded-lg p-5 border border-[#404040]">
+                  <QuestionDisplay question={currentQuestion} />
                 </div>
               )}
 
@@ -215,11 +219,14 @@ export default function App() {
         {/* RIGHT PANEL - Code Editor (65% width) */}
         <div className="flex-1 flex flex-col bg-[#1a1a1a]">
           {/* Code Editor Header */}
-          <div className="flex-shrink-0 h-12 bg-[#262626] border-b border-[#404040] flex items-center justify-between px-4">
+          <div className="flex-shrink-0 h-12 bg-[#262626] border-b border-[#404040] flex items-center justify-between px-5">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-gray-300">Code Editor</span>
+              <span className="text-sm font-semibold text-white">Code Editor</span>
               {currentQuestion && (
-                <span className="text-xs text-gray-500">• {currentQuestion.title}</span>
+                <>
+                  <span className="text-gray-500">•</span>
+                  <span className="text-xs text-gray-400 truncate max-w-xs">{currentQuestion.title}</span>
+                </>
               )}
             </div>
           </div>
@@ -234,7 +241,7 @@ export default function App() {
           </div>
 
           {/* Bottom Panel - Audio & Submit (Fixed height) */}
-          <div className="flex-shrink-0 bg-[#262626] border-t border-[#404040] p-4 space-y-4">
+          <div className="flex-shrink-0 bg-[#262626] border-t border-[#404040] p-5 space-y-4">
             <AudioRecorder
               onRecordingComplete={handleRecordingComplete}
               disabled={isSubmitting || !currentQuestion}
@@ -242,7 +249,7 @@ export default function App() {
 
             {/* Feedback */}
             {feedback && (
-              <div className={`rounded-lg p-3 text-sm border ${
+              <div className={`rounded-lg p-4 text-sm border ${
                 feedback.type === 'error' 
                   ? 'bg-red-500/10 border-red-500/30 text-red-300' 
                   : feedback.type === 'warning' 

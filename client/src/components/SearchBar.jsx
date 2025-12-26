@@ -7,7 +7,7 @@ import { useState } from 'react';
 const DIFFICULTY_OPTIONS = ['All', 'Easy', 'Medium', 'Hard'];
 const COMPANY_OPTIONS = ['All', 'Google', 'Amazon', 'Meta', 'Microsoft', 'Apple', 'Netflix', 'Uber'];
 
-export default function SearchBar({ onSearch, isLoading = false }) {
+export default function SearchBar({ onSearch, isLoading = false, showQuickSearches = true }) {
   const [query, setQuery] = useState('');
   const [difficulty, setDifficulty] = useState('All');
   const [company, setCompany] = useState('All');
@@ -31,8 +31,8 @@ export default function SearchBar({ onSearch, isLoading = false }) {
   }
 
   return (
-    <div className="space-y-3">
-      <form onSubmit={handleSubmit} className="space-y-2">
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,19 +45,20 @@ export default function SearchBar({ onSearch, isLoading = false }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search questions..."
             disabled={isLoading}
-            className="w-full bg-[#2d2d2d] border border-[#404040] rounded-lg px-10 py-2 text-sm text-white placeholder-gray-500 
-                       focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] 
+            className="w-full bg-[#2d2d2d] border border-[#404040] rounded-lg px-10 py-2.5 text-sm text-white placeholder-gray-500 
+                       focus:outline-none focus:border-[#0ea5e9] focus:ring-2 focus:ring-[#0ea5e9]/20 
                        disabled:opacity-50 transition-all"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
             disabled={isLoading}
-            className="bg-[#2d2d2d] border border-[#404040] rounded-lg px-3 py-1.5 text-xs text-gray-200 
-                       focus:outline-none focus:border-[#0ea5e9] disabled:opacity-50"
+            className="bg-[#2d2d2d] border border-[#404040] rounded-lg px-3 py-2 text-xs text-gray-200 
+                       focus:outline-none focus:border-[#0ea5e9] focus:ring-2 focus:ring-[#0ea5e9]/20 
+                       disabled:opacity-50 transition-all"
           >
             {DIFFICULTY_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>{opt}</option>
@@ -68,8 +69,9 @@ export default function SearchBar({ onSearch, isLoading = false }) {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             disabled={isLoading}
-            className="bg-[#2d2d2d] border border-[#404040] rounded-lg px-3 py-1.5 text-xs text-gray-200 
-                       focus:outline-none focus:border-[#0ea5e9] disabled:opacity-50"
+            className="bg-[#2d2d2d] border border-[#404040] rounded-lg px-3 py-2 text-xs text-gray-200 
+                       focus:outline-none focus:border-[#0ea5e9] focus:ring-2 focus:ring-[#0ea5e9]/20 
+                       disabled:opacity-50 transition-all"
           >
             {COMPANY_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>{opt}</option>
@@ -80,7 +82,7 @@ export default function SearchBar({ onSearch, isLoading = false }) {
         <button
           type="submit"
           disabled={isLoading || !query.trim()}
-          className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold py-2 px-4 rounded-lg text-sm
+          className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold py-2.5 px-4 rounded-lg text-sm
                      transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
@@ -97,22 +99,26 @@ export default function SearchBar({ onSearch, isLoading = false }) {
         </button>
       </form>
 
-      <div>
-        <p className="text-xs text-gray-500 mb-1.5">Quick:</p>
-        <div className="flex flex-wrap gap-1.5">
-          {['array', 'graph', 'tree', 'dp'].map((suggestion) => (
-            <button
-              key={suggestion}
-              onClick={() => handleQuickSearch(suggestion)}
-              disabled={isLoading}
-              className="px-2 py-1 bg-[#2d2d2d] hover:bg-[#353535] border border-[#404040] rounded text-xs text-gray-300 
-                         transition-all disabled:opacity-50"
-            >
-              {suggestion}
-            </button>
-          ))}
+      {/* Quick Searches - Only show when no question is selected */}
+      {showQuickSearches && (
+        <div>
+          <p className="text-xs text-gray-400 mb-3 font-medium">Quick Search:</p>
+          <div className="flex flex-wrap gap-2">
+            {['array', 'graph', 'tree', 'dp', 'sorting', 'string'].map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => handleQuickSearch(suggestion)}
+                disabled={isLoading}
+                className="px-3 py-1.5 bg-[#2d2d2d] hover:bg-[#353535] border border-[#404040] hover:border-[#0ea5e9]/50 
+                           rounded-lg text-xs text-gray-300 font-medium transition-all duration-200 
+                           disabled:opacity-50"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
