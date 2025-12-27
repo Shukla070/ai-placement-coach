@@ -43,10 +43,14 @@ export default function QuestionDisplay({ question }) {
             p: ({ node, ...props }) => (
               <p className="text-text-secondary mb-5 leading-loose text-sm" {...props} />
             ),
-            code: ({ node, inline, ...props }) =>
-              inline ?
-                <code className="bg-bg-primary px-2 py-1 rounded text-xs text-accent-blue font-mono" {...props} /> :
-                <code className="block bg-bg-primary p-4 rounded text-xs text-text-primary overflow-x-auto border border-border-default my-3 font-mono leading-relaxed" {...props} />,
+            code: ({ node, ...props }) => {
+              // In react-markdown v9+, inline prop was removed
+              // Inline code has node.tagName === 'code', block code is wrapped in 'pre'
+              const isInline = node.tagName === 'code';
+              return isInline ?
+                <code className="font-bold text-text-primary font-mono" {...props} /> :
+                <code className="block bg-bg-primary p-4 rounded text-xs text-text-primary overflow-x-auto border border-border-default my-3 font-mono leading-relaxed" {...props} />;
+            },
             ul: ({ node, ...props }) => (
               <ul className="list-none text-text-secondary space-y-2 mb-5 text-sm ml-0" {...props} />
             ),
