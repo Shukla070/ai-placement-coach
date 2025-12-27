@@ -1,11 +1,5 @@
 /**
  * CodeEditor Component - Monaco-based code editor
- * 
- * Features:
- * - VS Code editing experience
- * - Syntax highlighting
- * - Auto-completion
- * - Multiple language support
  */
 
 import Editor from '@monaco-editor/react';
@@ -14,10 +8,10 @@ import { useState } from 'react';
 // Loading component
 function EditorSkeleton() {
   return (
-    <div className="flex items-center justify-center h-full bg-[#1a1a1a]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#404040] border-t-[#0ea5e9] mx-auto mb-4"></div>
-        <p className="text-gray-400 text-sm">Loading editor...</p>
+    <div className="flex items-center justify-center h-full bg-bg-primary">
+      <div className="text-center flex-none max-w-[200px] max-h-[200px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-border-default border-t-accent-blue mx-auto mb-4 flex-shrink-0" style={{ width: '48px', height: '48px', minWidth: '48px', maxWidth: '48px', minHeight: '48px', maxHeight: '48px', flexShrink: 0 }}></div>
+        <p className="text-text-secondary text-sm">Loading editor...</p>
       </div>
     </div>
   );
@@ -60,7 +54,6 @@ export default function CodeEditor({ value, onChange, disabled = false }) {
 
   function handleEditorDidMount() {
     setIsEditorReady(true);
-    console.log('✅ Monaco Editor loaded successfully');
   }
 
   function handleEditorChange(newValue) {
@@ -70,22 +63,21 @@ export default function CodeEditor({ value, onChange, disabled = false }) {
   function handleLanguageChange(e) {
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
-    
+
     // Reset code when language changes
     onChange(DEFAULT_CODE[newLanguage]);
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a1a]">
+    <div className="h-full flex flex-col bg-bg-primary">
       {/* Language Selector */}
-      <div className="flex-shrink-0 bg-[#262626] border-b border-leetcode-border px-4 py-2 flex items-center justify-between">
-        <span className="text-xs text-gray-400">Language:</span>
+      <div className="flex-shrink-0 bg-bg-secondary border-b border-border-default px-4 py-2 flex items-center justify-between">
+        <span className="text-xs text-text-tertiary">Language:</span>
         <select
           value={language}
           onChange={handleLanguageChange}
           disabled={disabled}
-          className="bg-[#2d2d2d] border border-leetcode-border rounded px-3 py-1 text-sm text-white 
-                     focus:outline-none focus:border-[#0ea5e9] disabled:opacity-50"
+          className="input-field py-1 text-sm max-w-[150px]"
         >
           {LANGUAGE_OPTIONS.map((lang) => (
             <option key={lang.value} value={lang.value}>

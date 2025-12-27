@@ -1,8 +1,9 @@
 /**
- * AudioRecorder Component - Compact LeetCode Style
+ * AudioRecorder Component - Enhanced with new UI components
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { Button } from './ui/Button';
 
 const SUPPORTED_MIME_TYPES = [
   'audio/webm;codecs=opus',
@@ -111,46 +112,83 @@ export default function AudioRecorder({ onRecordingComplete, disabled = false })
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded p-2 text-red-300 text-xs">
-          ⚠️ {error}
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-300 text-xs">
+          <div className="flex items-center gap-2 font-semibold">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {error}
+          </div>
         </div>
       )}
 
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-300">🎤 Record Explanation</h3>
+        <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
+          <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H9m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+          Record Explanation
+        </h3>
         {isRecording && (
           <div className="flex items-center gap-2 text-red-400">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="font-mono text-sm font-bold">{formatTime(recordingTime)}</span>
+            <div className="relative">
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping opacity-75"></div>
+            </div>
+            <span className="font-mono text-base font-bold">{formatTime(recordingTime)}</span>
           </div>
         )}
       </div>
 
       {!isRecording && (
-        <p className="text-xs text-gray-500">Explain approach, complexity, edge cases (1-2 min)</p>
+        <p className="text-xs text-text-tertiary leading-relaxed">
+          Explain your approach, time complexity, and edge cases (1-2 minutes recommended)
+        </p>
+      )}
+
+      {isRecording && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1">
+              {[0, 100, 200, 300, 400].map((delay, i) => (
+                <div
+                  key={i}
+                  className="w-1 bg-red-500 rounded-full animate-pulse"
+                  style={{
+                    animationDelay: `${delay}ms`,
+                    height: `${15 + Math.random() * 15}px`,
+                  }}
+                ></div>
+              ))}
+            </div>
+            <p className="text-xs text-red-300 font-medium">Recording in progress...</p>
+          </div>
+        </div>
       )}
 
       {!isRecording ? (
-        <button
+        <Button
           onClick={startRecording}
+          variant="danger"
+          size="md"
           disabled={disabled || !!error}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg text-sm
-                     transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full"
         >
-          <div className="w-2 h-2 bg-white rounded-full"></div>
+          <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
           Start Recording
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
           onClick={stopRecording}
-          className="w-full bg-[#3b3b3b] hover:bg-[#4a4a4a] text-white font-semibold py-2 px-4 rounded-lg text-sm
-                     transition-all flex items-center justify-center gap-2"
+          variant="secondary"
+          size="md"
+          className="w-full"
         >
-          <div className="w-2 h-2 bg-white rounded"></div>
+          <div className="w-2.5 h-2.5 bg-white rounded"></div>
           Stop Recording
-        </button>
+        </Button>
       )}
     </div>
   );

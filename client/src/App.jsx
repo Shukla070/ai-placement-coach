@@ -1,5 +1,5 @@
 /**
- * Main App - LeetCode Style Coding Platform
+ * Main App - Enhanced with new UI components
  */
 
 import { useState } from 'react';
@@ -7,7 +7,14 @@ import CodeEditor from './components/CodeEditor';
 import QuestionDisplay from './components/QuestionDisplay';
 import AudioRecorder from './components/AudioRecorder';
 import SearchBar from './components/SearchBar';
+import { Button } from './components/ui/Button';
+import { Badge } from './components/ui/Badge';
+import { Feedback } from './components/ui/Feedback';
+import { SearchResultsSkeleton } from './components/ui/LoadingSkeleton';
 import { searchQuestions, submitSolution } from './services/api';
+import { MainLayout } from './components/layout/MainLayout';
+import { Header } from './components/layout/Header';
+
 
 const DEFAULT_CODE = `// Write your solution here
 function solve() {
@@ -54,6 +61,13 @@ export default function App() {
     setFeedback(null);
   }
 
+  function handleBackToSearch() {
+    setCurrentQuestion(null);
+    setCode(DEFAULT_CODE);
+    setAudioBlob(null);
+    setFeedback(null);
+  }
+
   function handleRecordingComplete(blob) {
     setAudioBlob(blob);
     setFeedback({
@@ -90,14 +104,14 @@ export default function App() {
     setIsSubmitting(true);
     setFeedback({
       type: 'info',
-      message: '🔄 Processing your submission... This may take 5-10 seconds.'
+      message: 'Processing your submission... This may take 5-10 seconds.'
     });
 
     try {
       const result = await submitSolution(currentQuestion.id, code, audioBlob);
       setFeedback({
         type: 'success',
-        message: `🎉 Score: ${result.score}/100`,
+        message: `Score: ${result.score}/100`,
         details: result
       });
     } catch (error) {
@@ -111,121 +125,140 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#1a1a1a] text-[#e5e5e5] overflow-hidden">
-      {/* Top Navigation Bar */}
-      <header className="flex-shrink-0 h-14 bg-[#262626] border-b border-[#404040] flex items-center px-6">
-        <div className="flex items-center gap-4 w-full">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] rounded-lg flex items-center justify-center text-white font-bold text-base shadow-lg">
-              AI
-            </div>
-            <h1 className="text-lg font-bold text-white">Placement Coach</h1>
-          </div>
-          <div className="flex-1"></div>
-          <div className="flex items-center gap-3">
-            {searchResults.length > 0 && !currentQuestion && (
-              <div className="px-3 py-1.5 bg-[#0ea5e9]/20 border border-[#0ea5e9]/40 rounded-lg">
-                <span className="text-sm text-[#0ea5e9] font-semibold">{searchResults.length} found</span>
-              </div>
-            )}
-            {currentQuestion && (
-              <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/40 rounded-lg">
-                <span className="text-sm text-green-400 font-semibold">Solving</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+    <MainLayout>
+      <Header searchResults={searchResults} currentQuestion={currentQuestion} />
 
       {/* Main Split Screen Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* LEFT PANEL - Questions (35% width) */}
-        <div className="w-[35%] flex flex-col border-r border-[#404040] bg-[#1f1f1f]">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* LEFT PANEL - Questions */}
+        <div className={`
+          flex flex-col border-r border-border-default bg-bg-secondary/50
+          w-full md:w-[35%] md:min-w-[320px] md:max-w-[480px] lg:w-[30%]
+          ${currentQuestion ? 'hidden md:flex' : 'flex'}
+        `}>
           {/* Search Section - Fixed at top */}
-          <div className="flex-shrink-0 p-5 border-b border-[#404040] bg-[#262626]">
-            <SearchBar 
-              onSearch={handleSearch} 
+          <div className="flex-shrink-0 p-5 border-b border-border-default bg-bg-secondary">
+            <SearchBar
+              onSearch={handleSearch}
               isLoading={isSearching}
               showQuickSearches={!currentQuestion}
             />
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto min-h-0">
             <div className="p-5">
-              {/* Show Search Results only when no question is selected */}
-              {!currentQuestion && searchResults.length > 0 && (
+              {/* Back to Search Button - Show when question is selected */}
+              {currentQuestion && (
+                <div className="mb-4 md:hidden">
+                  <Button
+                    onClick={handleBackToSearch}
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Search
+                  </Button>
+                </div>
+              )}
+
+              {/* Loading State */}
+              {isSearching && (
                 <div>
-                  <h3 className="text-sm font-bold text-white mb-4">Search Results</h3>
+                  <h3 className="text-sm font-bold text-text-primary mb-4">Search Results</h3>
+                  <SearchResultsSkeleton />
+                </div>
+              )}
+
+              {/* Search Results - Show only when no question is selected */}
+              {!isSearching && !currentQuestion && searchResults.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-bold text-text-primary mb-4">Search Results</h3>
                   <div className="space-y-3">
-                    {searchResults.map((result) => (
-                      <button
-                        key={result.id}
-                        onClick={() => selectQuestion(result)}
-                        className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${
-                          currentQuestion?.id === result.id
-                            ? 'bg-[#0ea5e9] text-white shadow-lg'
-                            : 'bg-[#2d2d2d] hover:bg-[#353535] text-gray-200 border border-[#404040] hover:border-[#0ea5e9]/50'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm mb-2 truncate">{result.title}</h4>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`text-xs px-2.5 py-1 rounded font-semibold ${
-                                result.metadata.difficulty === 'Easy' 
-                                  ? 'bg-green-500/25 text-green-300 border border-green-500/40' 
-                                  : result.metadata.difficulty === 'Medium'
-                                  ? 'bg-yellow-500/25 text-yellow-300 border border-yellow-500/40'
-                                  : 'bg-red-500/25 text-red-300 border border-red-500/40'
+                    {searchResults.map((result) => {
+                      const difficultyVariant = {
+                        'Easy': 'easy',
+                        'Medium': 'medium',
+                        'Hard': 'hard',
+                      }[result.metadata.difficulty] || 'default';
+
+                      return (
+                        <button
+                          key={result.id}
+                          onClick={() => selectQuestion(result)}
+                          className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${currentQuestion?.id === result.id
+                            ? 'bg-accent-blue text-white shadow-lg transform scale-[1.02]'
+                            : 'bg-bg-tertiary hover:bg-bg-hover text-text-primary border border-border-default hover:border-accent-blue/50 hover:shadow-md'
+                            }`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-sm mb-2 truncate leading-tight">{result.title}</h4>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Badge variant={difficultyVariant}>
+                                  {result.metadata.difficulty}
+                                </Badge>
+                                {result.metadata.topics.slice(0, 2).map(topic => (
+                                  <Badge key={topic} variant="topic">
+                                    {topic}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            <div className={`text-xs font-semibold px-2 py-1 rounded ${currentQuestion?.id === result.id
+                              ? 'bg-white/20 text-white'
+                              : 'bg-bg-primary text-text-tertiary'
                               }`}>
-                                {result.metadata.difficulty}
-                              </span>
-                              {result.metadata.topics.slice(0, 2).map(topic => (
-                                <span key={topic} className="text-xs px-2.5 py-1 rounded bg-[#0ea5e9]/25 text-[#0ea5e9] border border-[#0ea5e9]/40 font-medium">
-                                  {topic}
-                                </span>
-                              ))}
+                              {(result._searchScore * 100).toFixed(0)}%
                             </div>
                           </div>
-                          <div className="text-xs text-gray-400 font-semibold">
-                            {(result._searchScore * 100).toFixed(0)}%
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Question Display - Show when question is selected */}
               {currentQuestion && (
-                <div className="bg-[#2d2d2d] rounded-lg p-5 border border-[#404040]">
+                <div className="bg-bg-tertiary rounded-lg p-5 border border-border-default">
                   <QuestionDisplay question={currentQuestion} />
                 </div>
               )}
 
-              {/* Empty State */}
-              {!currentQuestion && searchResults.length === 0 && (
-                <div className="text-center py-16">
-                  <div className="text-5xl mb-4">🎯</div>
-                  <p className="text-sm text-gray-400">Search for questions to get started</p>
+              {/* Empty State - Enhanced */}
+              {!isSearching && !currentQuestion && searchResults.length === 0 && (
+                <div className="text-center py-20">
+                  <div className="inline-flex items-center justify-center w-20 h-20 max-w-[5rem] max-h-[5rem] bg-accent-blue/10 rounded-2xl mb-6 flex-shrink-0">
+                    <svg className="w-10 h-10 max-w-[2.5rem] max-h-[2.5rem] text-accent-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-base font-bold text-text-primary mb-2">Ready to Practice?</h3>
+                  <p className="text-sm text-text-secondary mb-1">Search for coding interview questions</p>
+                  <p className="text-xs text-text-tertiary">Try searching for "array", "graph", or "tree"</p>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* RIGHT PANEL - Code Editor (65% width) */}
-        <div className="flex-1 flex flex-col bg-[#1a1a1a]">
+        {/* RIGHT PANEL - Code Editor */}
+        <div className={`
+          flex-1 flex-col bg-bg-primary
+          ${!currentQuestion ? 'hidden md:flex' : 'flex'}
+        `}>
           {/* Code Editor Header */}
-          <div className="flex-shrink-0 h-12 bg-[#262626] border-b border-[#404040] flex items-center justify-between px-5">
+          <div className="flex-shrink-0 h-[7vh] bg-bg-secondary border-b border-border-default flex items-center justify-between px-5">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-white">Code Editor</span>
+              <span className="text-sm font-semibold text-text-primary">Code Editor</span>
               {currentQuestion && (
                 <>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-xs text-gray-400 truncate max-w-xs">{currentQuestion.title}</span>
+                  <span className="text-text-tertiary">•</span>
+                  <span className="text-xs text-text-secondary truncate max-w-xs">{currentQuestion.title}</span>
                 </>
               )}
             </div>
@@ -241,7 +274,7 @@ export default function App() {
           </div>
 
           {/* Bottom Panel - Audio & Submit (Fixed height) */}
-          <div className="flex-shrink-0 bg-[#262626] border-t border-[#404040] p-5 space-y-4">
+          <div className="flex-shrink-0 bg-bg-secondary border-t border-border-default p-5 space-y-4">
             <AudioRecorder
               onRecordingComplete={handleRecordingComplete}
               disabled={isSubmitting || !currentQuestion}
@@ -249,69 +282,31 @@ export default function App() {
 
             {/* Feedback */}
             {feedback && (
-              <div className={`rounded-lg p-4 text-sm border ${
-                feedback.type === 'error' 
-                  ? 'bg-red-500/10 border-red-500/30 text-red-300' 
-                  : feedback.type === 'warning' 
-                  ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-300'
-                  : feedback.type === 'success' 
-                  ? 'bg-green-500/10 border-green-500/30 text-green-300'
-                  : 'bg-[#0ea5e9]/10 border-[#0ea5e9]/30 text-[#0ea5e9]'
-              }`}>
-                <p className="font-semibold mb-2">{feedback.message}</p>
-                {feedback.details && (
-                  <div className="mt-3 space-y-2">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
-                        <div className="text-xs text-gray-400 mb-1">Correctness</div>
-                        <div className="text-lg font-bold text-[#0ea5e9]">{feedback.details.breakdown.correctness}/40</div>
-                      </div>
-                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
-                        <div className="text-xs text-gray-400 mb-1">Efficiency</div>
-                        <div className="text-lg font-bold text-purple-400">{feedback.details.breakdown.efficiency}/30</div>
-                      </div>
-                      <div className="bg-[#1a1a1a] rounded p-2 text-center border border-[#404040]">
-                        <div className="text-xs text-gray-400 mb-1">Communication</div>
-                        <div className="text-lg font-bold text-green-400">{feedback.details.breakdown.communication}/30</div>
-                      </div>
-                    </div>
-                    {feedback.details.feedback && (
-                      <div className="text-xs mt-2 p-2 bg-[#1a1a1a] rounded border border-[#404040]">
-                        <strong className="text-white">Feedback:</strong>
-                        <p className="mt-1 text-gray-300">{feedback.details.feedback}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <Feedback
+                type={feedback.type}
+                message={feedback.message}
+                details={feedback.details}
+              />
             )}
 
             {/* Submit Button */}
-            <button
+            <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || !currentQuestion || !audioBlob}
-              className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold py-3 px-4 rounded-lg 
-                         transition-all duration-200 shadow-md hover:shadow-lg
-                         disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              variant="primary"
+              size="lg"
+              isLoading={isSubmitting}
+              disabled={!currentQuestion || !audioBlob}
+              className="w-full"
             >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <span>🚀</span>
-                  <span>Submit Solution</span>
-                </>
-              )}
-            </button>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Submit Solution
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
+
   );
 }
