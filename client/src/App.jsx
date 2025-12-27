@@ -295,7 +295,7 @@ export default function App() {
             {/* Submit Button */}
             <Button
               onClick={handleSubmit}
-              variant="primary"
+              variant="success"
               size="lg"
               isLoading={isSubmitting}
               disabled={!currentQuestion || !audioBlob}

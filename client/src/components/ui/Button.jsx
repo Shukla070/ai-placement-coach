@@ -16,6 +16,7 @@ export function Button({
     primary: 'bg-accent-blue hover:bg-accent-blue-dark text-white shadow-md hover:shadow-lg',
     secondary: 'bg-bg-tertiary hover:bg-bg-hover text-text-primary border border-border-default',
     danger: 'bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg',
+    success: 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg',
     ghost: 'bg-transparent hover:bg-bg-tertiary text-text-primary',
   };
 
