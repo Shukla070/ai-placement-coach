@@ -273,8 +273,8 @@ export default function App() {
             />
           </div>
 
-          {/* Bottom Panel - Audio & Submit (Fixed height) */}
-          <div className="flex-shrink-0 bg-bg-secondary border-t border-border-default p-5 space-y-4">
+          {/* Bottom Panel - Audio & Submit */}
+          <div className="flex-shrink-0 bg-bg-secondary border-t border-border-default p-5 space-y-4 max-h-[30vh] overflow-y-auto">
             <AudioRecorder
               onRecordingComplete={handleRecordingComplete}
               disabled={isSubmitting || !currentQuestion}
