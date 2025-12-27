@@ -1,6 +1,7 @@
 import { Badge } from '../ui/Badge';
 
-export function Header({ searchResults = [], currentQuestion = null }) {
+export function Header({ searchResults = [], currentQuestion = null, submissionScore = null }) {
+  const isSolved = submissionScore && submissionScore >= 70;
   return (
     <header className="flex-shrink-0 h-[8vh] bg-bg-secondary border-b border-border-default flex items-center px-6">
       <div className="flex items-center gap-4 w-full">
@@ -18,8 +19,10 @@ export function Header({ searchResults = [], currentQuestion = null }) {
             </div>
           )}
           {currentQuestion && (
-            <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/40 rounded-lg">
-              <span className="text-sm text-green-400 font-semibold">Solving</span>
+            <div className={`px-3 py-1.5 rounded-lg ${isSolved ? 'bg-green-500/20 border border-green-500/40' : 'bg-yellow-500/20 border border-yellow-500/40'}`}>
+              <span className={`text-sm font-semibold ${isSolved ? 'text-green-400' : 'text-yellow-400'}`}>
+                {isSolved ? 'Solved ✓' : 'Solving'}
+              </span>
             </div>
           )}
         </div>

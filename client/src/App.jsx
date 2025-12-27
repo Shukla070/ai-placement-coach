@@ -29,6 +29,7 @@ export default function App() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [submissionScore, setSubmissionScore] = useState(null);
 
   async function handleSearch(query, filters) {
     setIsSearching(true);
@@ -59,6 +60,7 @@ export default function App() {
     setCode(DEFAULT_CODE);
     setAudioBlob(null);
     setFeedback(null);
+    setSubmissionScore(null);
   }
 
   function handleBackToSearch() {
@@ -109,6 +111,7 @@ export default function App() {
 
     try {
       const result = await submitSolution(currentQuestion.id, code, audioBlob);
+      setSubmissionScore(result.score);
       setFeedback({
         type: 'success',
         message: `Score: ${result.score}/100`,
@@ -126,7 +129,7 @@ export default function App() {
 
   return (
     <MainLayout>
-      <Header searchResults={searchResults} currentQuestion={currentQuestion} />
+      <Header searchResults={searchResults} currentQuestion={currentQuestion} submissionScore={submissionScore} />
 
       {/* Main Split Screen Layout */}
       <div className="flex-1 flex overflow-hidden relative">

@@ -19,12 +19,12 @@ export default function QuestionDisplay({ question }) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-bold text-text-primary leading-tight">{title}</h2>
-      
+
       <div className="flex flex-wrap gap-2">
         <Badge variant={difficultyVariant}>
           {metadata.difficulty}
         </Badge>
-        
+
         {metadata.topics.slice(0, 3).map((topic) => (
           <Badge key={topic} variant="topic">
             {topic}
@@ -37,24 +37,27 @@ export default function QuestionDisplay({ question }) {
       <div className="prose prose-invert prose-sm max-w-none max-h-[500px] overflow-y-auto pr-2">
         <ReactMarkdown
           components={{
-            h3: ({node, ...props}) => (
-              <h3 className="text-base font-bold text-text-primary mt-4 mb-2" {...props} />
+            h3: ({ node, ...props }) => (
+              <h3 className="text-base font-bold text-text-primary mt-6 mb-3 first:mt-0" {...props} />
             ),
-            p: ({node, ...props}) => (
-              <p className="text-text-secondary mb-3 leading-relaxed text-sm" {...props} />
+            p: ({ node, ...props }) => (
+              <p className="text-text-secondary mb-5 leading-loose text-sm" {...props} />
             ),
-            code: ({node, inline, ...props}) => 
-              inline ? 
-                <code className="bg-bg-primary px-1.5 py-0.5 rounded text-xs text-accent-blue font-mono" {...props} /> :
-                <code className="block bg-bg-primary p-3 rounded text-xs text-text-primary overflow-x-auto border border-border-default my-2 font-mono" {...props} />,
-            ul: ({node, ...props}) => (
-              <ul className="list-disc list-inside text-text-secondary space-y-1 mb-3 text-sm" {...props} />
+            code: ({ node, inline, ...props }) =>
+              inline ?
+                <code className="bg-bg-primary px-2 py-1 rounded text-xs text-accent-blue font-mono" {...props} /> :
+                <code className="block bg-bg-primary p-4 rounded text-xs text-text-primary overflow-x-auto border border-border-default my-3 font-mono leading-relaxed" {...props} />,
+            ul: ({ node, ...props }) => (
+              <ul className="list-none text-text-secondary space-y-2 mb-5 text-sm ml-0" {...props} />
             ),
-            li: ({node, ...props}) => (
-              <li className="text-text-secondary leading-relaxed" {...props} />
+            li: ({ node, ...props }) => (
+              <li className="text-text-secondary leading-loose pl-0" {...props} />
             ),
-            strong: ({node, ...props}) => (
+            strong: ({ node, ...props }) => (
               <strong className="text-text-primary font-bold" {...props} />
+            ),
+            pre: ({ node, ...props }) => (
+              <pre className="bg-bg-primary p-4 rounded border border-border-default overflow-x-auto my-3" {...props} />
             ),
           }}
         >
