@@ -139,21 +139,23 @@ export default function App() {
           w-full md:w-[35%] md:min-w-[320px] md:max-w-[480px] lg:w-[30%]
           ${currentQuestion ? 'hidden md:flex' : 'flex'}
         `}>
-          {/* Search Section - Fixed at top */}
-          <div className="flex-shrink-0 p-5 border-b border-border-default bg-bg-secondary">
-            <SearchBar
-              onSearch={handleSearch}
-              isLoading={isSearching}
-              showQuickSearches={!currentQuestion}
-            />
-          </div>
+          {/* Search Section - Fixed at top, hidden when question is selected */}
+          {!currentQuestion && (
+            <div className="flex-shrink-0 p-5 border-b border-border-default bg-bg-secondary">
+              <SearchBar
+                onSearch={handleSearch}
+                isLoading={isSearching}
+                showQuickSearches={!currentQuestion}
+              />
+            </div>
+          )}
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto min-h-0">
             <div className="p-5">
               {/* Back to Search Button - Show when question is selected */}
               {currentQuestion && (
-                <div className="mb-4 md:hidden">
+                <div className="mb-4">
                   <Button
                     onClick={handleBackToSearch}
                     variant="secondary"
@@ -267,8 +269,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Code Editor - Takes most space */}
-          <div className="flex-1 min-h-0">
+          {/* Code Editor - Reduced height to give more space to record section */}
+          <div className="h-[50vh] min-h-0">
             <CodeEditor
               value={code}
               onChange={setCode}
@@ -276,8 +278,8 @@ export default function App() {
             />
           </div>
 
-          {/* Bottom Panel - Audio & Submit */}
-          <div className="flex-shrink-0 bg-bg-secondary border-t border-border-default p-5 space-y-4 max-h-[30vh] overflow-y-auto">
+          {/* Bottom Panel - Audio & Submit - Increased height */}
+          <div className="flex-1 bg-bg-secondary border-t border-border-default p-5 space-y-4 overflow-y-auto">
             <AudioRecorder
               onRecordingComplete={handleRecordingComplete}
               disabled={isSubmitting || !currentQuestion}
@@ -309,7 +311,7 @@ export default function App() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </MainLayout >
 
   );
 }
