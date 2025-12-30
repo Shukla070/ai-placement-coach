@@ -1,248 +1,501 @@
 # 🎯 AI Placement Coach
 
-> **Multimodal AI-powered coding interview practice platform** - Get instant feedback on your code AND explanation using Google Cloud AI
+> **Multi-Subject AI-Powered Interview Practice Platform** - Master DSA, OS, DBMS, and OOPS with real-time AI feedback powered by Google Vertex AI
 
-[![Google Cloud](https://img.shields.io/badge/Google_Cloud-Vertex_AI-4285F4?logo=google-cloud\u0026logoColor=white)](https://cloud.google.com/vertex-ai)
-[![Live Demo](https://img.shields.io/badge/Live_MVP-🚀_Try_Now-success)](#) <!-- Update with deployment URL -->
-[![Demo Video](https://img.shields.io/badge/Demo-▶_Watch_(3_min)-red?logo=youtube)](#) <!-- Update with YouTube link -->
+[![Google Cloud](https://img.shields.io/badge/Google_Cloud-Vertex_AI-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Live Demo](https://img.shields.io/badge/Live_App-🚀_Try_Now-success)](https://client-delta-wheat.vercel.app)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev)
 
 ---
 
 ## 📖 Overview
 
-**AI Placement Coach** helps you ace technical interviews by evaluating both your **coding skills** and **communication ability** - just like a real interview.
+**AI Placement Coach** is a comprehensive interview preparation platform that helps you ace technical interviews across multiple subjects. Unlike traditional practice platforms that only check if your code runs, we use **Google Vertex AI (Gemini 2.5 Flash)** to provide intelligent, context-aware feedback on both your technical skills and communication ability.
 
-Most practice platforms only check if your code runs. We use **Google Vertex AI** to analyze your code quality, efficiency, AND how well you explain your approach.
+### 🌟 What Makes Us Different?
 
-### 🎥 [Watch Demo Video (3 min)](#) <!-- Add YouTube link -->
+- **Multi-Subject Coverage**: Practice DSA (coding), OS, DBMS, and OOPS (theory questions)
+- **AI-Powered Evaluation**: Real-time feedback using Google Vertex AI Gemini 2.5 Flash
+- **Multimodal Assessment**: Evaluate code quality, efficiency, AND explanation clarity
+- **Session Management**: Track progress with smart question rotation
+- **Production Ready**: Deployed on Google Cloud Run + Vercel
+
+---
+
+## ✨ Features
+
+### 🎓 Four Subject Domains
+
+#### 💻 **Data Structures & Algorithms (DSA)**
+- 35+ curated LeetCode-style coding problems
+- Professional Monaco code editor (VS Code engine)
+- Voice explanation recording
+- AI evaluation of code correctness, efficiency, and communication
+- Semantic search with vector embeddings
+
+#### ⚙️ **Operating Systems (OS)**
+- 50 comprehensive theory questions
+- Topics: Process Management, Memory, Scheduling, Deadlocks, File Systems
+- Text-based answer evaluation
+- Detailed AI feedback on clarity, completeness, and accuracy
+
+#### 🗄️ **Database Management Systems (DBMS)**
+- 30 curated database questions
+- Topics: ACID, Normalization, Joins, Indexing, Transactions, SQL
+- Schema design and query optimization problems
+- Conceptual understanding evaluation
+
+#### 🎯 **Object-Oriented Programming (OOPS)**
+- 30 OOP concept questions
+- Topics: Encapsulation, Inheritance, Polymorphism, Abstraction
+- Design pattern questions
+- Real-world application scenarios
+
+### 🤖 AI-Powered Features
+
+**For DSA (Coding)**:
+- Correctness (0-40 pts): Does the solution solve the problem?
+- Efficiency (0-30 pts): Time and space complexity analysis
+- Communication (0-30 pts): How well did you explain your approach?
+
+**For Theory (OS/DBMS/OOPS)**:
+- Clarity (0-30 pts): Structure and readability of answer
+- Completeness (0-40 pts): Coverage of key concepts
+- Accuracy (0-30 pts): Technical correctness
+
+### 🎨 Modern UI/UX
+
+- **Clean Navigation**: Intuitive navbar with route highlighting
+- **Color-Coded Actions**: Green for actions, Gray for navigation, Red for warnings
+- **Loading Indicators**: Smooth route transitions with visual feedback
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Session Tracking**: See progress with question counters
+
+---
+
+## 🏗️ Architecture
+
+### System Overview
+
+![Architecture Diagram](docs/diagrams/architecture.png)
+
+### Component Flow
+
+```
+┌─────────────────────────────────────────────────┐
+│          Frontend (React + Vite)                │
+│     Deployed on Vercel                          │
+│  • Home Page with 4 subject cards               │
+│  • DSA Page (Code Editor + Voice)               │
+│  • Theory Pages (OS, DBMS, OOPS)                │
+└─────────────────┬───────────────────────────────┘
+                  │ HTTP/REST
+                  ▼
+┌─────────────────────────────────────────────────┐
+│       Backend (Node.js + Express)               │
+│     Deployed on Google Cloud Run                │
+│  • Question Bank Loader                         │
+│  • Vector Search Engine                         │
+│  • Audio Transcription Service                  │
+└─────────────────┬───────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────┐
+│         Google Cloud Services                   │
+│  • Vertex AI (Gemini 2.5 Flash)                 │
+│  • Speech-to-Text API                           │
+│  • Text Embeddings (text-embedding-004)         │
+└─────────────────────────────────────────────────┘
+```
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Google Cloud account with Vertex AI enabled
-- Service account credentials
 
-### Installation
+- **Node.js 18+**
+- **Google Cloud Account** with Vertex AI enabled
+- **Service Account Credentials** with these roles:
+  - Vertex AI User
+  - Cloud Speech Client
+  - Storage Object Viewer
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Shukla070/ai-placement-coach.git
-   cd ai-placement-coach
-   ```
+### Local Setup
 
-2. **Install dependencies**
-   ```bash
-   # Install root dependencies
-   npm install
-   
-   # Install client dependencies
-   cd client
-   npm install
-   cd ..
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/Shukla070/ai-placement-coach.git
+cd ai-placement-coach
 
-3. **Set up Google Cloud credentials**
-   ```bash
-   # Create credentials directory
-   mkdir credentials
-   
-   # Add your service account JSON file
-   # credentials/service-account.json
-   ```
+# 2. Install dependencies
+npm install
+cd client && npm install && cd ..
 
-4. **Configure environment variables**
-   ```bash
-   # Copy example files
-   cp .env.example .env
-   cp client/.env.example client/.env
-   
-   # Edit .env with your values
-   GOOGLE_CLOUD_PROJECT_ID=your-project-id
-   GOOGLE_APPLICATION_CREDENTIALS=./credentials/service-account.json
-   ```
+# 3. Set up Google Cloud credentials
+mkdir credentials
+# Add your service-account.json to credentials/
 
-5. **Generate vector embeddings**
-   ```bash
-   npm run seed
-   ```
+# 4. Configure environment variables
+cp .env.example .env
+# Edit .env with your GCP project details
 
-6. **Start the application**
-   ```bash
-   # Terminal 1: Start backend
-   npm start
-   
-   # Terminal 2: Start frontend
-   cd client
-   npm run dev
-   ```
+# 5. Generate vector embeddings (DSA questions)
+npm run seed
 
-7. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
+# 6. Start backend (Terminal 1)
+npm start
+
+# 7. Start frontend (Terminal 2)
+cd client && npm run dev
+
+# 8. Open browser
+# http://localhost:5173
+```
+
+### Environment Variables
+
+**Backend (`.env`)**:
+```env
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_APPLICATION_CREDENTIALS=./credentials/service-account.json
+GCP_REGION=us-central1
+VERTEX_AI_TEXT_EMBEDDING_MODEL=text-embedding-004
+VERTEX_AI_GEMINI_MODEL=gemini-2.0-flash-exp
+PORT=3001
+```
+
+**Frontend (`client/.env`)**:
+```env
+VITE_API_URL=http://localhost:3001
+```
 
 ---
 
-## ✨ Features
+## 📸 Screenshots
 
-### 🔍 Semantic Question Search
-- Find coding problems by concept, not just keywords
-- Filter by difficulty, topic, company
-- Hybrid search (vector + keyword matching)
-- 35+ curated LeetCode-style questions
+### Home Page - Subject Selection
+Choose from 4 comprehensive subject areas for interview preparation.
 
-### 💻 Professional Code Editor
-- Monaco Editor (same as VS Code)
-- Syntax highlighting
-- Auto-completion
-- Real-time error detection
+![Home Page](docs/screenshots/home_page.png)
 
-### 🎙️ Voice Explanation
-- Record your thought process
-- Playback before submission
-- Browser-based audio capture
+### DSA - Code Editor with Search
+Search for coding problems and solve them with our professional code editor.
 
-### 🤖 AI-Powered Evaluation
-- **Google Vertex AI** (Gemini 1.5 Flash) analyzes your submission
-- Evaluates code correctness, efficiency, and style
-- Assesses explanation clarity and completeness
-- Provides detailed, actionable feedback
+![DSA Page](docs/screenshots/dsa_page.png)
 
----
+### Theory Question - Ready Screen
+Get ready to practice with a welcoming interface before diving into questions.
 
-## 🏗️ Architecture
+![Ready Screen](docs/screenshots/ready_screen.png)
 
-```
-User Browser (React)
-      ↓
-Express Backend
-      ↓
-Google Cloud Services:
-  • Vertex AI (Code + Explanation Judge)
-  • Speech-to-Text (Audio Transcription)
-  • Embeddings (Semantic Search)
-```
+### Theory Question Page - OS Example
+Practice with real interview questions across OS, DBMS, and OOPS topics.
 
-**Full architecture diagram**: [`docs/diagrams/architecture.png`](docs/diagrams/architecture.png)
+![Theory Page](docs/screenshots/theory_page.png)
+
+### AI Evaluation Results
+Receive detailed AI feedback with score breakdown and actionable improvements.
+
+![Feedback](docs/screenshots/feedback.png)
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 19** - Modern UI library
-- **Vite** - Fast build tool
-- **TailwindCSS 4** - Utility-first styling
-- **Monaco Editor** - Professional code editor
+- **React 19** - Modern UI library with concurrent features
+- **Vite** - Lightning-fast build tool and dev server
+- **TailwindCSS 4** - Utility-first CSS framework
+- **Monaco Editor** - VS Code's code editor (for DSA)
+- **React Router v6** - Client-side routing
+- **Axios** - HTTP client for API requests
 - **React Markdown** - Render problem statements
 
 ### Backend
 - **Node.js + Express** - Server framework
-- **Vector Search** - Semantic question matching
-- **In-memory DB** - Fast question retrieval
-
-### Google Cloud
-- **Vertex AI** - Gemini 1.5 Flash for judging
+- **Google Vertex AI** - Gemini 2.0 for intelligent evaluation
 - **Cloud Speech-to-Text** - Audio transcription
-- **Generative AI** - Embeddings for search
+- **Text Embeddings API** - Semantic search
+- **FFmpeg** - Audio normalization
+- **CORS** - Cross-origin resource sharing
+
+### Deployment
+- **Google Cloud Run** - Containerized backend hosting
+- **Vercel** - Frontend hosting with automatic deployments
+- **Docker** - Backend containerization
+- **Cloud Build** - Automated CI/CD pipeline
 
 ---
 
-## 📊 Google Techsprint Submission
+## 📊 Question Bank Statistics
 
-This project was built for **Google Techsprint 2025**.
-
-📄 **Full submission details**: [TECHSPRINT_SUBMISSION.md](TECHSPRINT_SUBMISSION.md)
-
-### What Makes It Special?
-✅ **Multimodal AI** - Only platform that evaluates code + explanation  
-✅ **Google Cloud Native** - Built entirely on GCP services  
-✅ **Real Interview Simulation** - Practice like you'll be tested  
-✅ **Instant Feedback** - Zero marginal cost, unlimited practice  
-
-### Submission Materials:
-- **Problem Statement**: Interview prep is expensive ($200-500/session) and lacks scalable feedback
-- **Solution**: AI-powered multimodal assessment using Google Cloud
-- **Differentiation**: First platform to evaluate explanation quality, not just code
-- **Process Flow**: [docs/diagrams/process_flow.png](docs/diagrams/process_flow.png)
-- **Use Case Diagram**: [docs/diagrams/usecase.png](docs/diagrams/usecase.png)
-- **Screenshots**: [docs/screenshots/](docs/screenshots/)
+| Subject | Questions | Topics Covered | Difficulty Range |
+|---------|-----------|----------------|------------------|
+| **DSA** | 35 | Arrays, Trees, Graphs, DP, Sorting, Strings | Easy - Hard |
+| **OS** | 50 | Processes, Memory, Scheduling, Deadlocks, I/O | Medium - Hard |
+| **DBMS** | 30 | ACID, Normalization, Joins, Indexing | Easy - Hard |
+| **OOPS** | 30 | Encapsulation, Polymorphism, Design Patterns | Easy - Medium |
+| **Total** | **145** | Full interview coverage | - |
 
 ---
 
-## 📸 Screenshots
+## 🔗 Live Deployment
 
-### Search Interface
-![Search](docs/screenshots/search.png)
-
-### Code Editor
-![Editor](docs/screenshots/editor.png)
-
-### AI Feedback
-![Feedback](docs/screenshots/feedback.png)
-
----
-
-## 🔗 Links
-
-- **Live MVP**: _[Deployment URL]_ <!-- Update after deployment -->
-- **Demo Video**: _[YouTube Link]_ <!-- Add 3-min demo video -->
+- **Production App**: [https://client-delta-wheat.vercel.app](https://client-delta-wheat.vercel.app)
+- **Backend API**: [https://ai-placement-coach-*.a.run.app](https://console.cloud.google.com/run)
 - **GitHub**: [https://github.com/Shukla070/ai-placement-coach](https://github.com/Shukla070/ai-placement-coach)
 
 ---
 
-## 📈 Future Roadmap
+## 📈 API Documentation
 
-### Phase 1 (Next 3 months)
-- 500+ questions covering all major topics
-- Company-specific interview tracks (Google, Amazon, Microsoft)
-- Support for Python, Java, C++
+### DSA Endpoints
 
-### Phase 2 (Next 6 months)
-- User authentication and progress tracking
-- Mock interview mode with timer
-- Collaborative features and discussion forums
+**Search Questions**
+```http
+POST /api/search
+Content-Type: application/json
 
-### Phase 3 (Next 12 months)
-- Premium tier with advanced features
-- Enterprise edition for bootcamps/universities
-- Job matching for top performers
+{
+  "query": "array sorting",
+  "filters": {
+    "difficulty": "Medium",
+    "companies": ["Google"]
+  }
+}
+```
+
+**Get Question by ID**
+```http
+GET /api/questions/:id
+```
+
+**Evaluate DSA Submission**
+```http
+POST /api/evaluate
+Content-Type: multipart/form-data
+
+{
+  "questionId": "q123",
+  "code": "function solve() { ... }",
+  "language": "javascript",
+  "audio": <binary>
+}
+```
+
+### Theory Endpoints
+
+**Get Random Question**
+```http
+GET /api/questions/random/:subject?exclude=id1,id2
+# subject: OS | DBMS | OOPS
+```
+
+**Evaluate Theory Answer**
+```http
+POST /api/evaluate/theory
+Content-Type: application/json
+
+{
+  "subject": "OS",
+  "questionId": "os_01",
+  "answer": "Your detailed answer..."
+}
+```
+
+---
+
+## 🎯 Usage Guide
+
+### User Flow Diagram
+
+![User Flow](docs/diagrams/user_flow.png)
+
+### DSA Practice Flow
+1. Click **DSA** card from home page
+2. Search for a coding problem
+3. Select question from results
+4. Write solution in code editor
+5. Record audio explanation (optional)
+6. Submit for AI evaluation
+7. Review detailed feedback
+
+### Theory Practice Flow (OS/DBMS/OOPS)
+1. Click **OS**, **DBMS**, or **OOPS** card
+2. See "Ready to Practice?" screen
+3. Click **Start Practice** (green button)
+4. Read question carefully
+5. Type answer (minimum 50 characters)
+6. Click **Submit Answer** (green button)
+7. Review AI evaluation with score breakdown
+8. Choose **Next Question** (gray) or **End Session** (red)
+
+---
+
+## 🚢 Deployment Guide
+
+### Deploy Backend to Google Cloud Run
+
+```bash
+# Build and deploy using Cloud Build
+gcloud builds submit --config cloudbuild.yaml
+
+# Or deploy manually
+docker build -t gcr.io/YOUR_PROJECT/ai-placement-coach .
+docker push gcr.io/YOUR_PROJECT/ai-placement-coach
+gcloud run deploy ai-placement-coach \
+  --image gcr.io/YOUR_PROJECT/ai-placement-coach \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+### Deploy Frontend to Vercel
+
+```bash
+# Using Vercel CLI
+cd client
+vercel --prod
+
+# Or connect GitHub repo in Vercel Dashboard
+# Auto-deploys on every push to main
+```
+
+---
+
+## 🧪 Testing
+
+### Run Local Tests
+```bash
+# Backend tests
+npm test
+
+# Frontend tests
+cd client && npm test
+```
+
+### Test Production Deployment
+```bash
+# Health check
+curl https://your-backend-url.run.app/health
+
+# Test OS question API
+curl https://your-backend-url.run.app/api/questions/random/OS
+
+# Test DBMS question API
+curl https://your-backend-url.run.app/api/questions/random/DBMS
+```
+
+---
+
+## 📖 Project Structure
+
+```
+ai-placement-coach/
+├── client/                    # Frontend React app
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Route pages
+│   │   ├── services/         # API client
+│   │   └── App.jsx           # Main router
+│   └── package.json
+├── server/                    # Backend Node.js app
+│   ├── routes/               # API route handlers
+│   ├── services/             # Business logic
+│   │   ├── judge.js          # DSA AI evaluator
+│   │   ├── theoryJudge.js    # Theory AI evaluator
+│   │   ├── questionLoader.js # Question bank loader
+│   │   └── search.js         # Vector search
+│   └── index.js              # Express server
+├── data/                      # Question banks
+│   ├── OS_questionbank.json
+│   ├── DBMS_questionbank.json
+│   ├── OOPS_questionbank.json
+│   └── questions_with_vectors.json
+├── Dockerfile                 # Backend container
+├── cloudbuild.yaml           # GCP deployment config
+└── package.json              # Root dependencies
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see our contributing guidelines.
+We welcome contributions! Here's how you can help:
+
+1. **Add Questions**: Expand question banks for any subject
+2. **Improve AI Prompts**: Enhance evaluation accuracy
+3. **UI/UX**: Design improvements and new features
+4. **Bug Fixes**: Report and fix issues
+5. **Documentation**: Improve guides and examples
+
+### Contribution Process
+```bash
+# 1. Fork the repository
+# 2. Create a feature branch
+git checkout -b feature/amazing-feature
+
+# 3. Make changes and commit
+git commit -m "Add amazing feature"
+
+# 4. Push to your fork
+git push origin feature/amazing-feature
+
+# 5. Open a Pull Request
+```
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 👨‍💻 Author
 
-**[Your Name]**  
-📧 [Your Email]  
-🎓 [Your University]  
+**Shukla070**  
+🔗 [GitHub](https://github.com/Shukla070)  
+📧 [Email](mailto:your-email@example.com)  
 
 ---
 
 ## 🙏 Acknowledgments
 
 Built with ❤️ using:
-- Google Cloud Platform (Vertex AI, Speech-to-Text)
-- React ecosystem
-- Monaco Editor
-- Open source community
+- **Google Cloud Platform** (Vertex AI, Cloud Run, Speech-to-Text)
+- **React** ecosystem and community
+- **Monaco Editor** by Microsoft
+- **Tailwind CSS** for styling
+- **Vercel** for frontend hosting
 
-Special thanks to **Google Techsprint** for the opportunity to innovate in AI-powered education.
+Special thanks to the open-source community and **Google Cloud** for making advanced AI accessible to developers.
 
 ---
 
-Made with 🚀 by [Your Team] for Google Techsprint 2025
+## 🎓 Use Cases
+
+- **Students**: Practice for campus placements and internships
+- **Job Seekers**: Prepare for technical interviews at top companies
+- **Bootcamps**: Structured interview preparation curriculum
+- **Universities**: Supplement computer science education
+- **Self-Learners**: Build confidence with unlimited practice
+
+---
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Shukla070/ai-placement-coach/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Shukla070/ai-placement-coach/discussions)
+- **Email**: your-email@example.com
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if it helped you prepare for interviews!**
+
+Made with 🚀 by [Shukla070](https://github.com/Shukla070)
+
+</div>
