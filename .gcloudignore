@@ -1,0 +1,54 @@
+# gcloudignore - Controls what gets uploaded to Cloud Build
+# Based on .gitignore but WITH EXCEPTIONS for deployment
+
+# Dependencies
+node_modules/
+yarn.lock
+
+# Environment variables (CRITICAL - don't upload secrets!)
+.env
+.env.local
+.env.production
+.env.*
+
+# Client (deployed separately)
+client/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+
+# Production build artifacts
+dist/
+build/
+
+# Credentials (NEVER upload!)
+credentials/
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# IMPORTANT: Include these for deployment even if gitignored
+!data/
+!data/*.json
+!data/questions_with_vectors.json
+!server/
+!package.json
+!Dockerfile
+!.dockerignore

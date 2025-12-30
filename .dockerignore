@@ -1,0 +1,50 @@
+# Node modules (will be installed in container)
+node_modules
+npm-debug.log
+
+# Client files (deployed separately)
+client
+
+# Environment files (set via Cloud Run)
+.env
+.env.local
+.env.*.local
+
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+TECHSPRINT_SUBMISSION.md
+docs
+
+# Development files
+*.md
+.vscode
+.idea
+
+# Test files
+test
+tests
+*.test.js
+*.spec.js
+
+# Temporary files
+temp
+tmp
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Credentials (NEVER include in image)
+credentials
+credentials/*.json
+
+# But DO include package.json and data files
+!package.json
+!package-lock.json
+!data/*.json
