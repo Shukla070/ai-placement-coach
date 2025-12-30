@@ -35,7 +35,7 @@ export function Feedback({ type = 'info', message, details, className = '', ...p
   if (!message) return null;
 
   return (
-    <div 
+    <div
       className={`rounded-lg p-4 text-sm border ${config.bg} ${config.border} ${config.text} ${className}`}
       {...props}
     >
@@ -47,18 +47,40 @@ export function Feedback({ type = 'info', message, details, className = '', ...p
         <div className="mt-3 space-y-2">
           {details.breakdown && (
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
-                <div className="text-xs text-text-tertiary mb-1">Correctness</div>
-                <div className="text-lg font-bold text-accent-blue">{details.breakdown.correctness}/40</div>
-              </div>
-              <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
-                <div className="text-xs text-text-tertiary mb-1">Efficiency</div>
-                <div className="text-lg font-bold text-purple-400">{details.breakdown.efficiency}/30</div>
-              </div>
-              <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
-                <div className="text-xs text-text-tertiary mb-1">Communication</div>
-                <div className="text-lg font-bold text-green-400">{details.breakdown.communication}/30</div>
-              </div>
+              {/* DSA Format: correctness, efficiency, communication */}
+              {details.breakdown.correctness !== undefined && (
+                <>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Correctness</div>
+                    <div className="text-lg font-bold text-accent-blue">{details.breakdown.correctness}/40</div>
+                  </div>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Efficiency</div>
+                    <div className="text-lg font-bold text-purple-400">{details.breakdown.efficiency}/30</div>
+                  </div>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Communication</div>
+                    <div className="text-lg font-bold text-green-400">{details.breakdown.communication}/30</div>
+                  </div>
+                </>
+              )}
+              {/* Theory Format: clarity, completeness, accuracy */}
+              {details.breakdown.clarity !== undefined && (
+                <>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Clarity</div>
+                    <div className="text-lg font-bold text-accent-blue">{details.breakdown.clarity}/30</div>
+                  </div>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Completeness</div>
+                    <div className="text-lg font-bold text-purple-400">{details.breakdown.completeness}/40</div>
+                  </div>
+                  <div className="bg-bg-primary rounded p-2 text-center border border-border-default">
+                    <div className="text-xs text-text-tertiary mb-1">Accuracy</div>
+                    <div className="text-lg font-bold text-green-400">{details.breakdown.accuracy}/30</div>
+                  </div>
+                </>
+              )}
             </div>
           )}
           {details.feedback && (

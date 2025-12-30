@@ -9,6 +9,8 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { normalizeAudio, transcribeAudio, cleanupTempFiles } from '../services/audio.js';
 import { evaluateSubmission } from '../services/judge.js';
+import { evaluateTheoryAnswer } from '../services/theoryJudge.js';
+import { getQuestionById } from '../services/questionLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +27,7 @@ const upload = multer({
     // Validate audio MIME types
     const allowedTypes = ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'];
     const isValidType = allowedTypes.some(type => file.mimetype.includes(type));
-    
+
     if (isValidType) {
       cb(null, true);
     } else {
@@ -49,7 +51,7 @@ router.post('/evaluate', upload.single('audio'), async (req, res) => {
 
   try {
     console.log('\n🚀 === NEW EVALUATION REQUEST ===');
-    
+
     // Extract form data
     const { questionId, code } = req.body;
     const audioFile = req.file;
@@ -89,7 +91,7 @@ router.post('/evaluate', upload.single('audio'), async (req, res) => {
     // Step 1: Normalize audio
     audioPath = audioFile.path;
     normalizedPath = path.join(path.dirname(audioPath), `normalized_${path.basename(audioPath)}.wav`);
-    
+
     await normalizeAudio(audioPath, normalizedPath);
 
     // Step 2: Transcribe audio
@@ -127,6 +129,81 @@ router.post('/evaluate', upload.single('audio'), async (req, res) => {
     if (audioPath || normalizedPath) {
       await cleanupTempFiles(audioPath, normalizedPath);
     }
+  }
+});
+
+/**
+ * POST /api/evaluate/theory
+ * 
+ * Body (JSON):
+ * - subject: string (OS|DBMS|OOPS)
+ * - questionId: string
+ * - answer: string
+ */
+router.post('/evaluate/theory', async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    console.log('\n🚀 === NEW THEORY EVALUATION REQUEST ===');
+
+    // Extract JSON data
+    const { subject, questionId, answer } = req.body;
+
+    // Validation
+    if (!subject || !questionId || !answer) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: subject, questionId, or answer',
+      });
+    }
+
+    if (answer.trim().length < 50) {
+      return res.status(400).json({
+        success: false,
+        error: 'Answer must be at least 50 characters',
+      });
+    }
+
+    console.log('📝 Submission Details:');
+    console.log(`   Subject: ${subject}`);
+    console.log(`   Question ID: ${questionId}`);
+    console.log(`   Answer length: ${answer.length} chars`);
+
+    // Load question with full data (including reference answer)
+    const question = getQuestionById(subject, questionId);
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        error: 'Question not found',
+      });
+    }
+
+    // Evaluate with AI
+    const evaluation = await evaluateTheoryAnswer(question, answer);
+
+    // Return results
+    const processingTime = Date.now() - startTime;
+    console.log(`✅ Evaluation complete in ${(processingTime / 1000).toFixed(2)}s`);
+    console.log('=================================\n');
+
+    res.json({
+      success: true,
+      ...evaluation,
+      metadata: {
+        processingTimeMs: processingTime,
+        answerLength: answer.length,
+      },
+    });
+
+  } catch (error) {
+    console.error('❌ Theory evaluation failed:', error.message);
+    console.error(error.stack);
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 });
 

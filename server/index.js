@@ -24,6 +24,7 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs/promises';
 import { hybridSearch, getQuestionById } from './services/search.js';
+import { loadQuestionBank, getRandomQuestion } from './services/questionLoader.js';
 import evaluateRouter from './routes/evaluate.js';
 
 // Configuration
@@ -46,26 +47,26 @@ let VECTOR_DB = [];
 async function loadVectorDatabase() {
   console.log('📂 Loading vector database...');
   console.log(`   Path: ${VECTOR_DB_PATH}`);
-  
+
   try {
     const rawData = await fs.readFile(VECTOR_DB_PATH, 'utf-8');
     VECTOR_DB = JSON.parse(rawData);
-    
+
     const validQuestions = VECTOR_DB.filter(q => q.embedding && q.embedding.length > 0);
     const failedQuestions = VECTOR_DB.length - validQuestions.length;
-    
+
     console.log(`✅ Loaded ${validQuestions.length} questions with embeddings`);
     if (failedQuestions > 0) {
       console.warn(`⚠️  ${failedQuestions} questions have missing embeddings`);
     }
-    
+
     // Calculate memory usage
     const memoryMB = (JSON.stringify(VECTOR_DB).length / 1024 / 1024).toFixed(2);
     console.log(`💾 Memory usage: ~${memoryMB} MB`);
-    
+
     // Store in app for access by routes
     app.set('VECTOR_DB', VECTOR_DB);
-    
+
     return true;
   } catch (error) {
     console.error('❌ Failed to load vector database:', error.message);
@@ -165,6 +166,49 @@ app.get('/api/questions', (req, res) => {
   }
 });
 
+// Random question endpoint for theory subjects
+// GET /api/questions/random/:subject?exclude=id1,id2,id3
+app.get('/api/questions/random/:subject', async (req, res) => {
+  try {
+    const { subject } = req.params;
+    const exclude = req.query.exclude ? req.query.exclude.split(',') : [];
+
+    // Validate subject
+    const validSubjects = ['OS', 'DBMS', 'OOPS'];
+    if (!validSubjects.includes(subject)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid subject. Must be one of: ${validSubjects.join(', ')}`
+      });
+    }
+
+    // Get random question
+    const question = getRandomQuestion(subject, exclude);
+
+    if (!question) {
+      return res.json({
+        success: false,
+        message: 'No more questions available',
+        allAnswered: true
+      });
+    }
+
+    // Return sanitized question (without reference_answer for security)
+    const { reference_answer, expected_points, keywords, ...clientQuestion } = question;
+
+    res.json({
+      success: true,
+      question: clientQuestion
+    });
+  } catch (error) {
+    console.error('Random question error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Mount evaluation router
 app.use('/api', evaluateRouter);
 
@@ -191,11 +235,23 @@ app.use((err, req, res, next) => {
 async function startServer() {
   console.log('🚀 Starting AI Placement Coach Server...\n');
 
-  // Load vector database
+  // Load vector database (for DSA)
   const dbLoaded = await loadVectorDatabase();
   if (!dbLoaded) {
     console.error('\n❌ Cannot start server without vector database');
     process.exit(1);
+  }
+
+  // Load theory question banks
+  console.log('\n📚 Loading theory question banks...');
+  try {
+    await loadQuestionBank('OS');
+    await loadQuestionBank('DBMS');
+    await loadQuestionBank('OOPS');
+    console.log('✅ All theory question banks loaded');
+  } catch (error) {
+    console.error('❌ Failed to load theory questions:', error.message);
+    // Don't exit - DSA can still work
   }
 
   // Start Express server

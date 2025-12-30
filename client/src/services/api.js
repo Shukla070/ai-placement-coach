@@ -57,8 +57,7 @@ export async function listAllQuestions() {
 }
 
 /**
- * Submit code + audio for evaluation
- * (We'll implement this in Week 3 - Phase 4)
+ * Submit code + audio for evaluation (DSA)
  */
 export async function submitSolution(questionId, code, audioBlob) {
   const formData = new FormData();
@@ -76,6 +75,37 @@ export async function submitSolution(questionId, code, audioBlob) {
   } catch (error) {
     console.error('Submit solution error:', error);
     throw new Error(error.response?.data?.error || 'Failed to submit solution');
+  }
+}
+
+/**
+ * Get random theory question for a subject
+ */
+export async function getRandomTheoryQuestion(subject, excludeIds = []) {
+  try {
+    const excludeParam = excludeIds.length > 0 ? `?exclude=${excludeIds.join(',')}` : '';
+    const response = await api.get(`/api/questions/random/${subject}${excludeParam}`);
+    return response.data;
+  } catch (error) {
+    console.error('Get random question error:', error);
+    throw new Error(error.response?.data?.error || 'Failed to fetch question');
+  }
+}
+
+/**
+ * Submit theory answer for evaluation
+ */
+export async function submitTheoryAnswer(subject, questionId, answer) {
+  try {
+    const response = await api.post('/api/evaluate/theory', {
+      subject,
+      questionId,
+      answer,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Submit theory answer error:', error);
+    throw new Error(error.response?.data?.error || 'Failed to evaluate answer');
   }
 }
 

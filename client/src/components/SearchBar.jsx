@@ -77,7 +77,7 @@ export default function SearchBar({ onSearch, isLoading = false, showQuickSearch
 
         <Button
           type="submit"
-          variant="primary"
+          variant="success"
           size="md"
           isLoading={isLoading}
           disabled={!query.trim()}
