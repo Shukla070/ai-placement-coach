@@ -4,8 +4,8 @@
 
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Vertex_AI-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
 [![Live Demo](https://img.shields.io/badge/Live_App-🚀_Try_Now-success)](https://client-delta-wheat.vercel.app)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-18.3.1-green?logo=node.js)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-22-blue?logo=react)](https://react.dev)
 
 ---
 
