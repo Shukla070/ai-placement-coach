@@ -107,7 +107,7 @@ Coding interview preparation is expensive, time-consuming, and lacks personalize
 
 ### Primary Google Cloud Services:
 
-#### 1. **Vertex AI (Gemini 1.5 Flash)**
+#### 1. **Vertex AI (Gemini 2.5 Flash)**
 - **Purpose**: Multimodal AI judge
 - **Usage**: Evaluates code + transcribed audio explanation
 - **Why**: State-of-the-art reasoning, handles complex code analysis, cost-effective
