@@ -4,8 +4,8 @@
 
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Vertex_AI-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
 [![Live Demo](https://img.shields.io/badge/Live_App-🚀_Try_Now-success)](https://client-delta-wheat.vercel.app)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-18.3.1-green?logo=node.js)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-22-blue?logo=react)](https://react.dev)
 
 ---
 
@@ -162,7 +162,7 @@ GOOGLE_CLOUD_PROJECT_ID=your-project-id
 GOOGLE_APPLICATION_CREDENTIALS=./credentials/service-account.json
 GCP_REGION=us-central1
 VERTEX_AI_TEXT_EMBEDDING_MODEL=text-embedding-004
-VERTEX_AI_GEMINI_MODEL=gemini-2.0-flash-exp
+VERTEX_AI_GEMINI_MODEL=gemini-2.5-flash
 PORT=3001
 ```
 
@@ -215,7 +215,7 @@ Receive detailed AI feedback with score breakdown and actionable improvements.
 
 ### Backend
 - **Node.js + Express** - Server framework
-- **Google Vertex AI** - Gemini 2.0 for intelligent evaluation
+- **Google Vertex AI** - Gemini-2.5-flash for intelligent evaluation
 - **Cloud Speech-to-Text** - Audio transcription
 - **Text Embeddings API** - Semantic search
 - **FFmpeg** - Audio normalization
@@ -430,36 +430,11 @@ We welcome contributions! Here's how you can help:
 4. **Bug Fixes**: Report and fix issues
 5. **Documentation**: Improve guides and examples
 
-### Contribution Process
-```bash
-# 1. Fork the repository
-# 2. Create a feature branch
-git checkout -b feature/amazing-feature
 
-# 3. Make changes and commit
-git commit -m "Add amazing feature"
 
-# 4. Push to your fork
-git push origin feature/amazing-feature
 
-# 5. Open a Pull Request
-```
 
----
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Shukla070**  
-🔗 [GitHub](https://github.com/Shukla070)  
-📧 [Email](mailto:your-email@example.com)  
-
----
 
 ## 🙏 Acknowledgments
 
@@ -484,13 +459,7 @@ Special thanks to the open-source community and **Google Cloud** for making adva
 
 ---
 
-## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/Shukla070/ai-placement-coach/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Shukla070/ai-placement-coach/discussions)
-- **Email**: your-email@example.com
-
----
 
 <div align="center">
 
